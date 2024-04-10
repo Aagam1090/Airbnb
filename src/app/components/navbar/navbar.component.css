@@ -1,0 +1,13 @@
+.navbar,.navbar-brand{
+    background-color:#FF5A5F;
+    color: white;
+    padding-left: 2%;
+}
+
+.navbar-sublink{
+    font-size: 1em;
+    color: white;
+    margin-right: 15px;
+    display: inline-block;
+    text-decoration: none;
+}

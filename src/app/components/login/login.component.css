@@ -1,0 +1,10 @@
+.form-control {
+    font-size: 14px; /* Decrease font size */
+    height: 40px; /* Increase height of input box */
+    width: 300px; /* Increase width of input box */
+  }
+
+  .btn{
+    background-color: #FF5A5F;
+    color:white
+  }
