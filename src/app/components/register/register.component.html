@@ -1,1 +1,33 @@
-<p>register works!</p>
+<!-- Registration Page -->
+<app-navbar></app-navbar>
+<div class="container d-flex justify-content-center align-items-center vh-80 mt-5 flex-column"> 
+  <img [src]="'assets/img/LogoPink.png'" height="50px" width="150px" class="mb-4">  
+
+  <div class="container d-flex justify-content-center align-items-center">
+    <form (ngSubmit)="onRegister()">
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" class="form-control" id="fullName" placeholder="Enter full name" [(ngModel)]="fullName" name="fullName" required>
+      </div>
+      <br>
+      <div class="form-group">
+        <label for="registerEmail">Email address</label>
+        <input type="email" class="form-control" id="registerEmail" placeholder="Enter email" [(ngModel)]="email" name="email" required>
+      </div>
+      <br>
+      <div class="form-group">
+        <label for="registerPassword">Password</label>
+        <input type="password" class="form-control" id="registerPassword" placeholder="Password" [(ngModel)]="password" name="password" required>
+      </div>
+      <br>
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
+      </div>
+      <br>
+      <div class="d-flex justify-content-center">
+         <button type="submit" class="btn">Register</button>
+      </div>
+    </form>
+  </div>
+</div>
