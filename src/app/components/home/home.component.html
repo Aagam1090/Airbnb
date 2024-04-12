@@ -5,9 +5,9 @@
             <img [src]="'assets/img/logo.png'" alt="Airbnb Logo" height="50px" width="50px" class="mr-2 py-1 px-0 ">
             <h2 class="float-md-start mb-0">Airbnb Review</h2>
             <nav class="nav nav-masthead justify-content-center ms-auto">
-              <a class="nav-link fw-bold py-1 px-0 active" aria-current="page" routerLink="/login">Login</a>
-              <a class="nav-link fw-bold py-1 px-0" routerLink="/register">Register</a>
-              <a class="nav-link fw-bold py-1 px-0" href="/login">Stats</a>
+              <a class="nav-link fw-bold py-1 px-0 active" aria-current="page" [routerLink]="['/login']">Login</a>
+              <a class="nav-link fw-bold py-1 px-0" [routerLink]="['/register']">Register</a>
+              <a class="nav-link fw-bold py-1 px-0" href="#">Stats</a>
             </nav>
           </div>
         </header>

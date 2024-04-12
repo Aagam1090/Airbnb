@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from 'src/app/service/auth.service';
+import { Component, OnInit } from '@angular/core';
+
 
 @Component({
   selector: 'app-register',
@@ -9,23 +8,14 @@ import { AuthService } from 'src/app/service/auth.service';
 })
 export class RegisterComponent {
   
-  fullName: string = '';
-  email: string = '';
-  password: string = '';
-  confirmPassword: string = '';
+    user = {
+      name: '',
+      email: '',
+      password: ''
+    };
 
-  constructor(private authService: AuthService, private router: Router) { }
-
-  onRegister() {
-    console.log(this.fullName);
-    console.log(this.email);
-
-    this.authService.register(this.fullName,this.email,this.password)
-    .subscribe(response => {
-        console.log('Registration successful', response);
-        this.router.navigate(['/login']); // or some other route
-      }, error => {
-        console.error('Registration failed', error);
-      });
+    onSubmit() {
+      console.log('User data:', this.user);
+      // Here you can handle the submission, e.g., send data to your backend
     }
-  }
+}

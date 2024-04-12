@@ -1,21 +1,17 @@
-<!-- <h2>login works</h2> -->
 <app-navbar></app-navbar>
-<div class="container d-flex justify-content-center align-items-center vh-80 mt-5 flex-column"> 
+<div class="container d-flex justify-content-center align-items-center vh-80 mt-5 flex-column"> <!-- Adjusted vh-90 to vh-80 -->
   <img [src]="'assets/img/LogoPink.png'" height="50px" width="150px" class="mb-4">  
 
   <div class="container d-flex justify-content-center align-items-center">
-    <!-- Add a name attribute to the form tag if you plan to use form validation or submission -->
     <form (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="exampleInputEmail1">Email address</label>
-        <!-- Add name attribute to input -->
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" [(ngModel)]="email" name="email">
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" [(ngModel)]="email">
       </div>
       <br>
       <div class="form-group">
         <label for="exampleInputPassword1">Password</label>
-        <!-- Add name attribute to input -->
-        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" [(ngModel)]="password" name="password">
+        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" [(ngModel)]="password">
       </div>
       <br>
       <div class="d-flex justify-content-center">
