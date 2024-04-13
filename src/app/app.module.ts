@@ -13,6 +13,17 @@ import { HttpClientModule } from '@angular/common/http';
 import { InsertComponent } from './insert/insert.component';
 import { SearchComponent } from './search/search.component';
 
+// Material UI Imports
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ReactiveFormsModule } from '@angular/forms';
+import {MatCardModule} from '@angular/material/card';
+
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,7 +39,14 @@ import { SearchComponent } from './search/search.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSliderModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatCardModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
