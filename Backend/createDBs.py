@@ -47,7 +47,7 @@ def insert_data_into_tables(city_path, connection):
         # Load and process listings data
         df_listings = pd.read_csv(listings_file, dtype=listings_dtype_spec)
         # Assuming 'amenities' is stored as a JSON-like string and needs special handling
-        df_listings['amenities'] = df_listings['amenities'].apply(json.loads)
+        # df_listings['amenities'] = df_listings['amenities'].apply(json.loads)
         df_listings = df_listings.replace(np.nan, None)  # Replace NaN with None
 
         # Load and process reviews data
@@ -97,7 +97,7 @@ def setup_schema_and_tables(user, password, host, city_path, city_db):
                 accommodates INT, 
                 bathrooms_text VARCHAR(255), 
                 beds FLOAT, 
-                amenities TEXT[], 
+                amenities TEXT, 
                 price VARCHAR(255), 
                 review_scores_rating FLOAT
             );
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     # Database connection parameters
     host = "localhost"
     user = "postgres"
-    password = "toor"
+    password = "root"
 
     directory_path = 'Citywise_Data'
 
