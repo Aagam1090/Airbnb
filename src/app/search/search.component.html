@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 
-<div class="container">
+<div class="container" *ngIf = "displayForm">
     <mat-card class="card">
         <h2 style="text-align: center;"> Search Property</h2>
       <form [formGroup]="registrationForm" class="registration-form" (ngSubmit)="submitForm()">
@@ -54,5 +54,9 @@
         <button mat-raised-button color="primary" type="submit">Submit</button>
       </form>
     </mat-card>
+  </div>
+
+  <div *ngIf = "displayResults">
+    <app-results></app-results>
   </div>
   
