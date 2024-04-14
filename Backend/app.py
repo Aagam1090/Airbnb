@@ -63,5 +63,17 @@ def register():
 
     # Return success message
     return jsonify({'message': 'Registered successfully!'}), 201
+
+
+@app.route('/search', methods=['GET'])
+def search_listing():
+    # Retrieve query parameters from the GET request
+    query_params = request.args
+
+    data = {key: query_params.getlist(key) if len(query_params.getlist(key)) > 1 else query_params[key] for key in query_params}
+
+    print(data['city'])
+    return jsonify(data)
+
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

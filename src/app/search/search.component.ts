@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators,FormArray } from '@angular/forms';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-search',
@@ -10,8 +11,9 @@ export class SearchComponent {
   registrationForm: FormGroup;
   cityList: string[] = ['New York', 'Los Angeles', 'Chicago', 'Houston'];
   amenitiesList: string[] = ['Pool', 'Gym', 'Parking', 'WiFi'];
+  apiUrl = 'http://127.0.0.1:5000/search';
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder,private http: HttpClient) {
     this.registrationForm = this.formBuilder.group({
       name: [''],
       city: ['', Validators.required],
@@ -36,7 +38,15 @@ export class SearchComponent {
 
   submitForm() {
     if (this.registrationForm.valid) {
-      console.log(this.registrationForm.value);
+      const params = new HttpParams({ fromObject: this.registrationForm.value });
+      this.http.get(this.apiUrl, { params }).subscribe(
+        response => {
+          console.log('Search results:', response);
+        },
+        error => {
+          console.error('Error:', error);
+        }
+      );
     } else {
       console.error('Form is not valid');
     }
