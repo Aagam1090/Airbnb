@@ -15,6 +15,8 @@ export class LoginComponent {
   constructor(private router: Router, private authService: AuthService) { }
 
   onSubmit() {
+    this.authService.setLoginStatus(true);
+    this.router.navigate(['/search']);
     // this.authService.login(this.email, this.password)
     // .subscribe(response => {
     //   console.log('Response from Auth API:', response);

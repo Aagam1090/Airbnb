@@ -21,6 +21,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ReactiveFormsModule } from '@angular/forms';
 import {MatCardModule} from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { ResultsComponent } from './components/results/results.component';
+import { MatSortModule } from '@angular/material/sort';
 
 
 
@@ -32,7 +35,8 @@ import {MatCardModule} from '@angular/material/card';
     RegisterComponent,
     NavbarComponent,
     InsertComponent,
-    SearchComponent
+    SearchComponent,
+    ResultsComponent
   ],
   imports: [
     BrowserModule,
@@ -46,6 +50,8 @@ import {MatCardModule} from '@angular/material/card';
     MatButtonModule,
     MatCheckboxModule,
     MatCardModule,
+    MatTableModule,
+    MatSortModule,
     ReactiveFormsModule
   ],
   providers: [],

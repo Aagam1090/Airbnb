@@ -6,7 +6,16 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AuthService {
 
-   constructor(private http : HttpClient) { }
+  loggedIn = false;
+  constructor(private http : HttpClient) { }
+
+  getLoginStatus(){
+    return this.loggedIn;
+  }
+
+  setLoginStatus(status: boolean){
+    this.loggedIn = status;
+  }
 
   // // login(email: string, password: string) {
   // //   const apiUrl = 'your_backend_endpoint_url';
