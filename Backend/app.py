@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_login import LoginManager, UserMixin, login_user
+import psycopg2
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with your secret key
@@ -11,6 +12,11 @@ login_manager = LoginManager(app)
 
 login_manager.init_app(app)
 
+def get_db_connection(database_name):
+    conn = psycopg2.connect(database=database_name, user="postgres", password="root", host="localhost")
+    return conn
+
+# A simple user model (you may need to replace this with your database model)
 class User(UserMixin):
     def __init__(self, id, name, email, password):
         self.id = id
@@ -69,6 +75,22 @@ def search_listing():
 
     print(data['city'])
     return jsonify(data)
+
+@app.route('/getCitites', methods=['GET'])
+def get_cities():
+    conn = get_db_connection("cities")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT city_name FROM city_info")
+        rows = cursor.fetchall()
+        cities = [row[0] for row in rows]
+    except Exception as e:
+        print(f"Database query failed: {e}")
+        cities = []
+    finally:
+        cursor.close()
+        conn.close()
+    return jsonify(cities)
 
 if __name__ == '__main__':
     app.run(debug=False)
