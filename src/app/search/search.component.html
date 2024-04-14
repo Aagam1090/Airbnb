@@ -7,7 +7,7 @@
         <!-- Name Field -->
         <mat-form-field class="full-width-field">
           <mat-label>Name</mat-label>
-          <input matInput placeholder="Your Name" formControlName="name">
+          <input matInput placeholder="Property Name" formControlName="name">
         </mat-form-field>
   
         <!-- City Dropdown -->
@@ -42,12 +42,12 @@
           <input matInput type="number" formControlName="people">
         </mat-form-field>
   
-        <!-- Amenities Multi-select Dropdown -->
+        <!-- Amenity Multi-select Dropdown -->
         <mat-form-field class="full-width-field">
           <mat-label>Amenities</mat-label>
-          <mat-select formControlName="amenities" multiple>
-            <mat-option *ngFor="let amenity of amenitiesList" [value]="amenity">{{ amenity }}</mat-option>
-          </mat-select>
+            <mat-select formControlName="amenities" multiple>
+              <mat-option *ngFor="let amenity of amenitiesList" [value]="amenity">{{ amenity }}</mat-option>
+            </mat-select>
         </mat-form-field>
   
         <!-- Submit Button -->
