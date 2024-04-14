@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators,FormArray } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { GetcityService } from '../service/getcity.service';
 
 @Component({
   selector: 'app-search',
@@ -9,13 +10,20 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 })
 export class SearchComponent {
   registrationForm: FormGroup;
-  cityList: string[] = ['New York', 'Los Angeles', 'Chicago', 'Houston'];
+  cityList: string[] = [];
   amenitiesList: string[] = ['Pool', 'Gym', 'Parking', 'WiFi'];
   apiUrl = 'http://127.0.0.1:5000/search';
   displayForm = true;
   displayResults = false;
 
-  constructor(private formBuilder: FormBuilder,private http: HttpClient) {
+  ngOnInit() {
+    this.getCityService.getCities().subscribe(cities => {
+      console.log('Cities:', cities);
+      this.cityList = cities;
+    });
+  }
+
+  constructor(private formBuilder: FormBuilder,private http: HttpClient,private getCityService: GetcityService) {
     this.registrationForm = this.formBuilder.group({
       name: [''],
       city: ['', Validators.required],
