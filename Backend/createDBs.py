@@ -21,46 +21,66 @@ def create_database(dbname, user, password, host):
         cursor.close()
         conn.close()
 
-def insert_data_from_csv(file_path, table_name, connection):
-    # dtype_spec = {
-    #     'id': str,
-    #     'name': str,
-    #     'host_location': str,
-    #     'property_type': str,
-    #     'accommodates': int,
-    #     'bathrooms': str,
-    #     'beds': int,
-    #     'price': float,
-    #     'review_scores_rating': float
-    # }
-    data = pd.read_csv(file_path)
-    print(data)
-    data['amenities'] = data['amenities'].apply(json.loads)  # Assuming amenities are stored as valid JSON strings in CSV
+def insert_data_into_tables(city_path, connection):
+    # Assume city_path is the directory containing both listings.csv and reviews.csv
+    listings_file = os.path.join(city_path, "listings.csv")
+    reviews_file = os.path.join(city_path, "reviews.csv")
 
-    # Replace all NaN values with None
-    data = data.replace(np.nan, None)  # Directly set NaNs to None
-    columns = ', '.join(data.columns)
-    placeholders = ', '.join(['%s'] * len(data.columns))
+    listings_dtype_spec = {
+        'id': str,
+        'name': str,
+        'host_location': str,
+        'property_type': str,
+        'accommodates': int,
+        'bathrooms': str,
+        'beds': float,
+        'price': str,
+        'review_scores_rating': float
+    }
 
-    # Customize the below SQL query based on your database schema
-    for index, row in data.iterrows():
-        cur = connection.cursor()
+    reviews_dtype_spec = {
+        'id': str,
+        'comments': str
+    }
 
-        try:
-            if isinstance(row['amenities'], str):
-                row['amenities'] = json.loads(row['amenities'])
-            cur.execute(f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders}) ON CONFLICT (id) DO NOTHING;", tuple(row))
+    try:
+        # Load and process listings data
+        df_listings = pd.read_csv(listings_file, dtype=listings_dtype_spec)
+        # Assuming 'amenities' is stored as a JSON-like string and needs special handling
+        df_listings['amenities'] = df_listings['amenities'].apply(json.loads)
+        df_listings = df_listings.replace(np.nan, None)  # Replace NaN with None
+
+        # Load and process reviews data
+        df_reviews = pd.read_csv(reviews_file, dtype=reviews_dtype_spec)
+        df_reviews.replace(np.nan, None)
+
+        # Insert listings data into database
+        with connection.cursor() as cur:
+            for _, row in df_listings.iterrows():
+                columns = ', '.join(row.index)
+                placeholders = ', '.join(['%s'] * len(row))
+                sql = f"INSERT INTO listings ({columns}) VALUES ({placeholders}) ON CONFLICT (id) DO NOTHING;"
+                cur.execute(sql, tuple(row))
+
+            print("Listings data inserted successfully.")
+            
+            for _, row in df_reviews.iterrows():
+                cur.execute("INSERT INTO reviews (id, reviewer_id, reviewer_name, comments) VALUES (%s, %s, %s, %s) ON CONFLICT (id) DO NOTHING;", (row['id'], row['reviewer_id'], row['reviewer_name'], row['comments']))
+                
+                cur.execute("INSERT INTO listings_reviews (listing_id, review_id) VALUES (%s, %s) ON CONFLICT DO NOTHING;", (row['listing_id'], row['id']))
+            
+            print("Reviews data inserted successfully.")
+            
             connection.commit()
-        except Exception as e:
-            print(f"Failed to insert data: {e}")
-            connection.rollback()  # Roll back the transaction on error
-        finally:
-            cur.close()
 
-def setup_schema_and_tables(user, password, host, city, city_schema):
+    except Exception as e:
+        print(f"Failed to insert data into database: {e}")
+        connection.rollback()  # Roll back the transaction on error
+
+def setup_schema_and_tables(user, password, host, city_path, city_db):
     # Define the connection parameters for the new city database
     db_params = {
-        "database": city_schema.lower().replace(' ', '_').replace('-', '_'),
+        "database": city_db.lower().replace(' ', '_').replace('-', '_'),
         "user": user,
         "password": password,
         "host": host
@@ -70,27 +90,31 @@ def setup_schema_and_tables(user, password, host, city, city_schema):
     with conn.cursor() as cursor:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS listings (
-                id VARCHAR(255) PRIMARY KEY,
+                id TEXT PRIMARY KEY,
                 name TEXT,
                 host_location VARCHAR(255),
                 property_type VARCHAR(255), 
                 accommodates INT, 
                 bathrooms_text VARCHAR(255), 
-                beds INT, 
+                beds FLOAT, 
                 amenities TEXT[], 
-                price FLOAT, 
+                price VARCHAR(255), 
                 review_scores_rating FLOAT
             );
             CREATE TABLE IF NOT EXISTS reviews (
-                id VARCHAR(255) PRIMARY KEY,
-                listing_id VARCHAR(255),
-                reviewer_id VARCHAR(255),
+                id TEXT PRIMARY KEY,
+                reviewer_id TEXT,
                 reviewer_name TEXT,
-                comments TEXT,
-                FOREIGN KEY (listing_id) REFERENCES listings(id)
+                comments TEXT
+            );
+            CREATE TABLE IF NOT EXISTS listings_reviews (
+                listing_id TEXT,
+                review_id TEXT,
+                PRIMARY KEY (listing_id, review_id)
             );
         """)
         conn.commit()
+        insert_data_into_tables(city_path, conn)
     conn.close()
 
 def create_cities_table(dbname, user, password, host):
@@ -130,7 +154,7 @@ if __name__ == "__main__":
     user = "postgres"
     password = "toor"
 
-    directory_path = '../Airbnb Data/'
+    directory_path = 'Citywise_Data'
 
     create_database("cities", user, password, host)
     create_cities_table("cities", user, password, host)
@@ -140,5 +164,5 @@ if __name__ == "__main__":
         if os.path.isdir(city_path):
             city_db = city.lower().replace(' ', '_').replace('-', '_')
             create_database(city_db, user, password, host)  # Create a new database for each city
-            setup_schema_and_tables(user, password, host, city, city_db)  # Setup tables in the new city database
+            setup_schema_and_tables(user, password, host, city_path, city_db)  # Setup tables in the new city database
 
