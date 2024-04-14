@@ -93,6 +93,37 @@ def setup_schema_and_tables(user, password, host, city, city_schema):
         conn.commit()
     conn.close()
 
+def create_cities_table(dbname, user, password, host):
+    try:
+        conn = psycopg2.connect(database=dbname, user=user, password=password, host=host)
+        cursor = conn.cursor()
+        # Create table if not exists within the Cities schema
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS city_info (
+                city_name VARCHAR(255) PRIMARY KEY,
+                db_name VARCHAR(255)
+            )
+        """)
+
+        # Loop through files in the directory
+        for folder_name in os.listdir(directory_path):
+            folder_path = os.path.join(directory_path, folder_name)
+            if os.path.isdir(folder_path):
+                city_name = folder_name  # The folder name is the city name
+                db_name = folder_name.lower().replace(' ', '_').replace('-', '_')
+                
+                # Insert data into the database
+                cursor.execute('INSERT INTO city_info (city_name, db_name) VALUES (%s, %s) ON CONFLICT (city_name) DO NOTHING', (city_name, db_name))
+
+        # Commit changes and close the connection
+        conn.commit()
+        cursor.close()
+        conn.close()
+        print("Data successfully inserted and schema set up.")
+
+    except Exception as e:
+        print(f"Failed to insert data into the city database: {e}")
+
 if __name__ == "__main__":
     # Database connection parameters
     host = "localhost"
@@ -101,10 +132,13 @@ if __name__ == "__main__":
 
     directory_path = '../Airbnb Data/'
 
+    create_database("cities", user, password, host)
+    create_cities_table("cities", user, password, host)
+
     for city in os.listdir(directory_path):
         city_path = os.path.join(directory_path, city)
         if os.path.isdir(city_path):
-            city_schema = city.lower().replace(' ', '_').replace('-', '_')
-            create_database(city_schema, user, password, host)  # Create a new database for each city
-            setup_schema_and_tables(user, password, host, city, city_schema)  # Setup tables in the new city database
+            city_db = city.lower().replace(' ', '_').replace('-', '_')
+            create_database(city_db, user, password, host)  # Create a new database for each city
+            setup_schema_and_tables(user, password, host, city, city_db)  # Setup tables in the new city database
 
