@@ -12,6 +12,8 @@ export class SearchComponent {
   cityList: string[] = ['New York', 'Los Angeles', 'Chicago', 'Houston'];
   amenitiesList: string[] = ['Pool', 'Gym', 'Parking', 'WiFi'];
   apiUrl = 'http://127.0.0.1:5000/search';
+  displayForm = true;
+  displayResults = false;
 
   constructor(private formBuilder: FormBuilder,private http: HttpClient) {
     this.registrationForm = this.formBuilder.group({
@@ -42,6 +44,8 @@ export class SearchComponent {
       this.http.get(this.apiUrl, { params }).subscribe(
         response => {
           console.log('Search results:', response);
+          this.displayForm = false;
+          this.displayResults = true;
         },
         error => {
           console.error('Error:', error);

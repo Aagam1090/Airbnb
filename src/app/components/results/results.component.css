@@ -1,0 +1,16 @@
+table {
+    width: 100%;
+  }
+  
+.maintab{
+    margin:5%
+}
+  th.mat-header-cell, td.mat-cell {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .mat-elevation-z8 {
+    box-shadow: 0 6px 10px -4px rgba(0,0,0,0.15);
+  }
+  

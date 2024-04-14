@@ -1,4 +1,4 @@
-<nav class="navbar justify-content-between">
+<nav class="navbar justify-content-between" *ngIf="!loggedIn">
     <a class="navbar-brand">
         <img [src]="'assets/img/logo.png'" alt="Airbnb Logo" height="30px" width="30px" class="mr-2 py-1 px-1">
         Airbnb Review
@@ -6,5 +6,17 @@
     <div>
         <a class="navbar-sublink mr-3" [routerLink]="['/login']"> Login </a>
         <a class="navbar-sublink" [routerLink]="['/register']"> Register</a>
+    </div>
+</nav>
+
+<nav class="navbar" *ngIf="loggedIn">
+    <a class="navbar-brand">
+        <img [src]="'assets/img/logo.png'" alt="Airbnb Logo" height="30px" width="30px" class="mr-2 py-1 px-1">
+        Airbnb Review
+    </a>
+    <div>
+        <a class="navbar-sublink mr-3" [routerLink]="['/search']"> Search </a>
+        <a class="navbar-sublink" [routerLink]="['/insert']"> Insert</a>
+        <a class="navbar-sublink"  (click)="logout()"> Logout</a>
     </div>
 </nav>

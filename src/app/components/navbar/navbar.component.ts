@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { AuthService } from 'src/app/service/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -7,4 +9,15 @@ import { Component } from '@angular/core';
 })
 export class NavbarComponent {
 
+  constructor(private authService:AuthService,private router:Router) { }
+  loggedIn = false;
+
+  ngOnInit() {
+    this.loggedIn = this.authService.getLoginStatus();
+  }
+
+  logout(){
+    this.authService.setLoginStatus(false);
+    this.router.navigate(['/logout']);
+  }
 }
