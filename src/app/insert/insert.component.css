@@ -1,0 +1,33 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 125vh;
+    padding: 24px;
+  }
+  
+  .card {
+    width: 100%;
+    max-width: 600px;
+    padding: 2%;
+  }
+  
+  .registration-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .full-width-field {
+    width: 100%;
+  }
+  
+  .price-range-group {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .price-field {
+    flex: 1;
+  }
+  

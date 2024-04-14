@@ -9,10 +9,8 @@ CORS(app)
 
 login_manager = LoginManager(app)
 
-# User session management setup
 login_manager.init_app(app)
 
-# A simple user model (you may need to replace this with your database model)
 class User(UserMixin):
     def __init__(self, id, name, email, password):
         self.id = id
@@ -36,18 +34,16 @@ def load_user(user_id):
 
 @app.route('/login', methods=['POST'])
 def login():
-    data = request.json
+    data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-    print(email,password)
-    # Placeholder for actual user retrieval from the database
-    user = next((u for u in users if u.email == email), None)
-    
+    user = next((u for u in users if u.email == email and u.password == password), None)
     if user:
         login_user(user)
-        return jsonify({'message': 'Logged in successfully!'}), 200
+        return jsonify({'success': True, 'message': 'Logged in successfully!'}), 200
     else:
-        return jsonify({'message': 'Invalid credentials!'}), 401
+        return jsonify({'success': False, 'message': 'Invalid credentials!'}), 401
+
     
 @app.route('/register', methods=['POST'])
 def register():
@@ -61,13 +57,12 @@ def register():
     new_user = User(id=len(users)+1, name=fullname, email=email, password=hashed_password)
     users.append(new_user)
 
-    # Return success message
-    return jsonify({'message': 'Registered successfully!'}), 201
+    return jsonify({'success': True, 'message': 'Registered successfully!'}), 201
 
 
 @app.route('/search', methods=['GET'])
 def search_listing():
-    # Retrieve query parameters from the GET request
+
     query_params = request.args
 
     data = {key: query_params.getlist(key) if len(query_params.getlist(key)) > 1 else query_params[key] for key in query_params}
@@ -76,4 +71,4 @@ def search_listing():
     return jsonify(data)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

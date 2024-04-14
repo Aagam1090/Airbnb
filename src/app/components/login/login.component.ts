@@ -15,14 +15,16 @@ export class LoginComponent {
   constructor(private router: Router, private authService: AuthService) { }
 
   onSubmit() {
-    this.authService.setLoginStatus(true);
-    this.router.navigate(['/search']);
-    // this.authService.login(this.email, this.password)
-    // .subscribe(response => {
-    //   console.log('Response from Auth API:', response);
-    // }, error => {
-    //   // Handle error
-    //   console.error('Error from Auth API:', error);
-    // });
+
+    this.authService.login(this.email, this.password).subscribe({
+      next: (response) => {
+        if (this.authService.getLoginStatus()) {
+          this.router.navigate(['/search']);
+        }
+      },
+      error: (error) => {
+        console.error('Login failed', error);
+      }
+    });
   }
 }

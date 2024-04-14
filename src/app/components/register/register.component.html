@@ -1,7 +1,7 @@
 <app-navbar></app-navbar><div class="container d-flex justify-content-center align-items-center">
     <div>
       <h2 class="form-title text-center">Register User</h2>
-      <form (ngSubmit)="onSubmit()" #userForm="ngForm">
+      <form (ngSubmit)="onRegister()" #userForm="ngForm">
         <div class="form-group">
           <label for="name">Name</label>
           <input type="text" class="form-control" id="name" placeholder="Enter name" [(ngModel)]="user.name" name="name" required>
