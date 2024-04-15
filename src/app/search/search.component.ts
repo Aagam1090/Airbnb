@@ -15,6 +15,7 @@ export class SearchComponent {
   apiUrl = 'http://127.0.0.1:5000/search';
   displayForm = true;
   displayResults = false;
+  dataresponse: any;
 
   ngOnInit() {
     this.getCityService.getCities().subscribe(cities => {
@@ -31,7 +32,8 @@ export class SearchComponent {
       priceMax: ['', [Validators.required, Validators.min(0)]],
       bedrooms: ['', [Validators.min(1), Validators.max(30)]],
       people: ['', [Validators.min(1), Validators.max(30)]],
-      amenities: [this.getDefaultAmenities()]
+      amenities: [this.getDefaultAmenities()],
+      rating: ['', [Validators.min(1), Validators.max(10)]],
     }, { validators: this.priceRangeValidator });
   }
 
@@ -52,6 +54,7 @@ export class SearchComponent {
       this.http.get(this.apiUrl, { params }).subscribe(
         response => {
           console.log('Search results:', response);
+          this.dataresponse = response;
           this.displayForm = false;
           this.displayResults = true;
         },

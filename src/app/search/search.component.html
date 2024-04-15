@@ -1,62 +1,77 @@
 <app-navbar></app-navbar>
 
-<div class="container" *ngIf = "displayForm">
+<div class="container" *ngIf="displayForm">
     <mat-card class="card">
-        <h2 style="text-align: center;"> Search Property</h2>
-      <form [formGroup]="registrationForm" class="registration-form" (ngSubmit)="submitForm()">
-        <!-- Name Field -->
-        <mat-form-field class="full-width-field">
-          <mat-label>Name</mat-label>
-          <input matInput placeholder="Property Name" formControlName="name">
-        </mat-form-field>
-  
-        <!-- City Dropdown -->
-        <mat-form-field class="full-width-field">
-          <mat-label>City</mat-label>
-          <mat-select formControlName="city">
-            <mat-option *ngFor="let city of cityList" [value]="city">{{ city }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-  
-        <!-- Price Range Fields -->
-        <div class="price-range-group">
-          <mat-form-field class="price-field">
-            <mat-label>Min Price</mat-label>
-            <input matInput type="number" formControlName="priceMin">
-          </mat-form-field>
-          <mat-form-field class="price-field">
-            <mat-label>Max Price</mat-label>
-            <input matInput type="number" formControlName="priceMax">
-          </mat-form-field>
-        </div>
-  
-        <!-- Bedrooms Field -->
-        <mat-form-field class="full-width-field">
-          <mat-label>Bedrooms</mat-label>
-          <input matInput type="number" formControlName="bedrooms">
-        </mat-form-field>
-  
-        <!-- Number of People Field -->
-        <mat-form-field class="full-width-field">
-          <mat-label>Number of People</mat-label>
-          <input matInput type="number" formControlName="people">
-        </mat-form-field>
-  
-        <!-- Amenity Multi-select Dropdown -->
-        <mat-form-field class="full-width-field">
-          <mat-label>Amenities</mat-label>
-            <mat-select formControlName="amenities" multiple>
-              <mat-option *ngFor="let amenity of amenitiesList" [value]="amenity">{{ amenity }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-  
-        <!-- Submit Button -->
-        <button mat-raised-button color="primary" type="submit">Submit</button>
-      </form>
-    </mat-card>
-  </div>
+      <br>
+        <h2 class="title">Search Property</h2>
+        <form [formGroup]="registrationForm" class="registration-form" (ngSubmit)="submitForm()">
+            <div class="form-row">
+                <!-- Left Column -->
+                <div class="column">
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Name</mat-label>
+                        <input matInput placeholder="Property Name" formControlName="name">
+                    </mat-form-field>
 
-  <div *ngIf = "displayResults">
-    <app-results></app-results>
-  </div>
-  
+                    <mat-form-field class="full-width-field">
+                        <mat-label>City</mat-label>
+                        <mat-select formControlName="city">
+                            <mat-option *ngFor="let city of cityList" [value]="city">{{ city }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Neighborhood</mat-label>
+                        <input matInput placeholder="Neighborhood Name" formControlName="neighborhood">
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Bedrooms</mat-label>
+                        <input matInput type="number" formControlName="bedrooms">
+                    </mat-form-field>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="column">
+                    <div class="price-range-group">
+                        <mat-form-field class="price-field">
+                            <mat-label>Min Price</mat-label>
+                            <input matInput type="number" formControlName="priceMin">
+                        </mat-form-field>
+                        <mat-form-field class="price-field">
+                            <mat-label>Max Price</mat-label>
+                            <input matInput type="number" formControlName="priceMax">
+                        </mat-form-field>
+                    </div>
+
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Number of People</mat-label>
+                        <input matInput type="number" formControlName="people">
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Amenities</mat-label>
+                        <mat-select formControlName="amenities" multiple>
+                            <mat-option *ngFor="let amenity of amenitiesList" [value]="amenity">{{ amenity }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Rating</mat-label>
+                        <input matInput type="number" placeholder="Rating between 1-10" formControlName="rating" min="1" max="10">
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="button-container">
+                <button mat-raised-button color="primary" type="submit">Submit</button>
+            </div>
+            <br>
+        </form>
+    </mat-card>
+</div>
+
+<div *ngIf="displayResults">
+    <app-results [dataresponse]="dataresponse"></app-results>
+</div>
