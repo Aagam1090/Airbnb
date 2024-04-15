@@ -1,33 +1,43 @@
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    padding: 24px;
-  }
-  
-  .card {
-    width: 100%;
-    max-width: 600px;
-    padding: 2%;
-  }
-  
-  .registration-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .full-width-field {
-    width: 100%;
-  }
-  
-  .price-range-group {
-    display: flex;
-    gap: 12px;
-  }
-  
-  .price-field {
-    flex: 1;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4%;
+}
+
+.card {
+  width: 90%;
+  margin: auto;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.column {
+  flex: 1;
+  padding: 10px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.full-width-field,
+.price-field {
+  width: 100%;
+}
+
+.price-range-group {
+  display: flex;
+  justify-content: space-between;
+}

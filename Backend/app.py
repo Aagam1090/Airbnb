@@ -68,16 +68,42 @@ def register():
 
     return jsonify({'success': True, 'message': 'Registered successfully!'}), 201
 
-
 @app.route('/search', methods=['GET'])
 def search_listing():
-
     query_params = request.args
 
     data = {key: query_params.getlist(key) if len(query_params.getlist(key)) > 1 else query_params[key] for key in query_params}
 
-    # print(data['city'])
-    return jsonify(data)
+    sql = f"SELECT * FROM listings WHERE price >= {data['priceMin']} AND price <= {data['priceMax']}"
+
+    if data['bedrooms'] != '':
+        sql += f" AND beds = {data['bedrooms']}"
+
+    if data['people'] != '':
+        sql += f" AND accommodates = {data['people']}"
+
+    if data['rating'] != '':
+        sql += f" AND review_scores_rating >= {data['rating']}"
+
+    if 'amenities' in data:
+        # Iterate over each element in the amenities list
+        for element in data['amenities']:
+            # Add the LIKE condition for the current element to the SQL query
+            sql += f" AND amenities LIKE '%{element}%' "
+
+    db_name = data['city'].lower().replace(' ','_')
+    conn = get_db_connection(db_name)
+    cursor = conn.cursor() 
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+
+    # Transform the result into a list of dictionaries
+    res = []
+    columns = ['id', 'name', 'host_location', 'property_type', 'accommodates', 'bathrooms_text', 'beds', 'amenities', 'price', 'review_scores_rating']
+    for row in rows:
+        res.append({columns[i]: row[i] for i in range(len(columns))})
+
+    return jsonify(res)
 
 @app.route('/getCitites', methods=['GET'])
 def get_cities():
@@ -225,4 +251,4 @@ def insert_property_data(data, conn):
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
