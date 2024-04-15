@@ -1,28 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-
+import { GetcityService } from '../service/getcity.service';
+import { InsertpropertyService } from '../service/insertproperty.service';
 @Component({
   selector: 'app-insert',
   templateUrl: './insert.component.html',
   styleUrls: ['./insert.component.css']
 })
-export class InsertComponent implements OnInit {
+export class InsertComponent {
   propertyForm!: FormGroup;
-  cityList: string[] = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Other'];
-  showOtherCityField = false; // This property will control the visibility of the 'Other' city input field
+  cityList: string[] = [];
+  // cityList: string[] = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Other'];
+  showOtherCityField = false;
 
-  constructor(private formBuilder: FormBuilder, private http: HttpClient) {}
+  constructor(private formBuilder: FormBuilder, private http: HttpClient, private getCityService: GetcityService, private insertPropertyService: InsertpropertyService) {}
 
   ngOnInit(): void {
     this.propertyForm = this.formBuilder.group({
       name: ['', Validators.required],
-      field: [''],
       location: ['', Validators.required],
       city: ['', Validators.required],
       otherCity: [{value: '', disabled: true}],
       price: [null, Validators.required],
       bedrooms: [null, [Validators.required, Validators.max(50)]],
+      bathrooms: [null, [Validators.required, Validators.max(50)]],
       guests: [null, [Validators.required, Validators.max(100)]],
       amenities: [''],
       propertyType: ['', Validators.required],
@@ -38,15 +40,22 @@ export class InsertComponent implements OnInit {
         this.propertyForm.get('otherCity')?.disable();
       }
     });
+
+    this.getCityService.getCities().subscribe(cities => {
+      console.log('Cities:', cities);
+      this.cityList = cities;
+      this.cityList.push("Other");
+    });
   }
 
   onSubmitPropertyForm() {
     if (this.propertyForm.valid) {
       const formData = this.propertyForm.value;
+      console.log(formData);
       if (!this.propertyForm.get('otherCity')?.enabled) {
-        delete formData.otherCity;
+        delete formData.otherCity;  // Ensure otherCity is not sent unnecessarily
       }
-      this.http.post('http://your-backend-url/properties', formData).subscribe({
+      this.insertPropertyService.insertProperty(formData).subscribe({
         next: (response) => {
           console.log('Property added successfully:', response);
         },

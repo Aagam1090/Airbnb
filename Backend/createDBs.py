@@ -152,7 +152,7 @@ if __name__ == "__main__":
     # Database connection parameters
     host = "localhost"
     user = "postgres"
-    password = "root"
+    password = "admin"
 
     directory_path = 'Citywise_Data'
 
