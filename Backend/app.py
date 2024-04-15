@@ -162,7 +162,7 @@ def setup_schema(conn):
                 bathrooms_text VARCHAR(255), 
                 beds FLOAT, 
                 amenities TEXT, 
-                price VARCHAR(255), 
+                price FLOAT, 
                 review_scores_rating FLOAT
             );
             CREATE TABLE IF NOT EXISTS reviews (
