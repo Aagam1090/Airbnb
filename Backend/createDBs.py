@@ -34,7 +34,7 @@ def insert_data_into_tables(city_path, connection):
         'accommodates': int,
         'bathrooms': str,
         'beds': float,
-        'price': str,
+        'price': float,
         'review_scores_rating': float
     }
 
@@ -98,7 +98,7 @@ def setup_schema_and_tables(user, password, host, city_path, city_db):
                 bathrooms_text VARCHAR(255), 
                 beds FLOAT, 
                 amenities TEXT, 
-                price VARCHAR(255), 
+                price FLOAT, 
                 review_scores_rating FLOAT
             );
             CREATE TABLE IF NOT EXISTS reviews (
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     # Database connection parameters
     host = "localhost"
     user = "postgres"
-    password = "root"
+    password = "toor"
 
     directory_path = 'Citywise_Data'
 
