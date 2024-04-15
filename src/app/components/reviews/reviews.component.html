@@ -1,0 +1,38 @@
+<h2 style="margin-top: 5%; margin-bottom: 0; text-align: center">
+    Airbnb Reviews
+  </h2>
+
+  <button class="btn btn-primary backSearch" (click)="goBackListing()">Back to Listings</button>
+
+  <div class="mat-elevation-z8 tablediv">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> ID </th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="reviewer_name">
+        <th mat-header-cell *matHeaderCellDef> Reviewer Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.reviewer_name}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="comments">
+        <th mat-header-cell *matHeaderCellDef> Comments </th>
+        <td mat-cell *matCellDef="let element"> {{element.comments}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-button (click)="updateReview(element.id)">Update</button>
+          <button mat-button color="warn" (click)="deleteReview(element.id)">Delete</button>
+        </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
+  

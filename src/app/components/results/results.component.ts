@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChild, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, SimpleChanges, OnChanges,Output, EventEmitter } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
+import { ReviewService } from 'src/app/service/review.service';
 
 @Component({
   selector: 'app-results',
@@ -10,6 +11,12 @@ import { MatSort } from '@angular/material/sort';
 export class ResultsComponent implements OnInit, OnChanges {
   @Input() dataresponse!: any[];
   @ViewChild(MatSort, { static: false }) sort: MatSort | null = null;
+  @Output() onBack = new EventEmitter<void>(); 
+  showReviews = false;
+  showLisiting = true;
+  reviewData: any[] = [];
+
+  constructor(private reviewService: ReviewService){}
 
   dataSource = new MatTableDataSource<any>([]);
 
@@ -23,6 +30,30 @@ export class ResultsComponent implements OnInit, OnChanges {
     if (changes['dataresponse']) {
       this.updateDataSource();
     }
+  }
+
+  goBack() {
+    this.onBack.emit(); 
+  }
+
+  storeData(row: any) {
+    if(row.review_scores_rating !== 'N/A') {
+      this.reviewService.getReviews(row.id, row.city).subscribe(
+        data => {
+          console.log('Reviews:', data);
+          this.reviewData = data;
+          this.showReviews = true;
+          this.showLisiting = false;
+        },
+        error => console.error('Error fetching reviews:', error)
+      );
+    }
+  }
+
+  handleListingBack(): void {
+    console.log('Going back to listing');
+    this.showReviews = false;
+    this.showLisiting = true; // Show the search form again
   }
 
   private updateDataSource() {

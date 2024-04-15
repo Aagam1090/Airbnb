@@ -73,5 +73,5 @@
 </div>
 
 <div *ngIf="displayResults">
-    <app-results [dataresponse]="dataresponse"></app-results>
+    <app-results [dataresponse]="dataresponse"  (onBack)="handleBack()"></app-results>
 </div>

@@ -24,6 +24,8 @@ import {MatCardModule} from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { ResultsComponent } from './components/results/results.component';
 import { MatSortModule } from '@angular/material/sort';
+import { ReviewsComponent } from './components/reviews/reviews.component';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 
 
 
@@ -36,7 +38,8 @@ import { MatSortModule } from '@angular/material/sort';
     NavbarComponent,
     InsertComponent,
     SearchComponent,
-    ResultsComponent
+    ResultsComponent,
+    ReviewsComponent
   ],
   imports: [
     BrowserModule,
@@ -52,6 +55,7 @@ import { MatSortModule } from '@angular/material/sort';
     MatCardModule,
     MatTableModule,
     MatSortModule,
+    MatPaginatorModule,
     ReactiveFormsModule
   ],
   providers: [],
