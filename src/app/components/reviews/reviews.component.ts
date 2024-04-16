@@ -2,6 +2,7 @@ import { Component, Input,Output,EventEmitter } from '@angular/core';
 import { OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
+import { ReviewService } from 'src/app/service/review.service';
 
 @Component({
   selector: 'app-reviews',
@@ -17,6 +18,8 @@ export class ReviewsComponent {
 
   @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
 
+  constructor(private reviewService: ReviewService) {}
+
   ngOnInit() {
     this.dataSource.data = this.reviewData; 
     this.dataSource.paginator = this.paginator;
@@ -26,9 +29,12 @@ export class ReviewsComponent {
     console.log('Review data changed', this.reviewData);
   }
 
-  deleteReview(id: string) {
-    console.log('Delete review', id);
-    // Implement deletion logic
+  deleteReview(id: string, city: string) {
+    console.log('Delete review', id, city);
+    this.reviewService.deleteReview(id, city).subscribe({
+      next: (response) => console.log('Delete successful', response),
+      error: (error) => console.error('Error deleting review', error)
+    });
   }
 
   updateReview(id: string) {

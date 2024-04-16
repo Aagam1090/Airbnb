@@ -15,7 +15,7 @@ login_manager = LoginManager(app)
 login_manager.init_app(app)
 
 def get_db_connection(database_name):
-    conn = psycopg2.connect(database=database_name, user="postgres", password="root", host="localhost")
+    conn = psycopg2.connect(database=database_name, user="postgres", password="toor", host="localhost")
     return conn
 
 # A simple user model (you may need to replace this with your database model)
@@ -168,6 +168,35 @@ def insert_property():
         if conn:
             conn.close()
 
+@app.route('/deleteReview', methods=['POST'])
+def delete_review():
+    data = request.get_json()
+    review_id = data.get('review_id')
+    city = data.get('city')
+
+    if not review_id:
+        return jsonify({'success': False, 'message': 'Failure'}), 400
+
+    db_name = city.lower().replace(' ', '_').replace('-', '_')
+    conn = get_db_connection(db_name)
+
+    try:
+        with conn.cursor() as cur:
+            # Delete from listings_reviews first to maintain referential integrity
+            cur.execute("DELETE FROM listings_reviews WHERE review_id = %s", (review_id,))
+            # Delete from reviews
+            cur.execute("DELETE FROM reviews WHERE id = %s", (review_id,))
+
+            conn.commit()  # Ensure changes are committed to the database
+
+            return jsonify({'success': True, 'message': 'Review deleted successfully!'}), 200
+    except Exception as e:
+        conn.rollback()  # Rollback the transaction on error
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
 def create_city_database(conn, city):
     with conn.cursor() as cur:
         db_name = city.lower().replace(' ', '_').replace('-', '_')
@@ -178,7 +207,7 @@ def create_city_database(conn, city):
 
 def create_new_city_database(db_name):
 
-    conn1 = psycopg2.connect(database="postgres", user="postgres", password="root", host="localhost")
+    conn1 = psycopg2.connect(database="postgres", user="postgres", password="toor", host="localhost")
     conn1.autocommit = True
     cursor = conn1.cursor()
     try:

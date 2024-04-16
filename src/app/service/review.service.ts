@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ReviewService {
-  private apiUrl = 'http://127.0.0.1:5000/getReviews'; // Adjust the URL based on your actual Flask server URL
+  private apiUrl = 'http://127.0.0.1:5000'; // Adjust the URL based on your actual Flask server URL
 
   constructor(private http: HttpClient) { }
 
@@ -15,6 +15,10 @@ export class ReviewService {
       .set('listing_id', listingId)
       .set('city', city);
 
-    return this.http.get<any[]>(this.apiUrl, { params });
+    return this.http.get<any[]>(`${this.apiUrl}/getReviews`, { params });
+  }
+
+  deleteReview(reviewId: string, city: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/deleteReview`, { review_id: reviewId, city: city });
   }
 }
