@@ -75,7 +75,7 @@ def search_listing():
 
     amenities_list = ['Kitchen', 'Iron', 'Wifi', 'Parking','Gym','Pool','Washer','Dryer','Heating','Air conditioning','TV','Cable TV','Elevator','Family/kid friendly','Smoke detector','Carbon monoxide detector','First aid kit','Fire extinguisher','Essentials','Shampoo','Hangers','Hair dryer','Laptop friendly workspace','Private entrance','Hot water']
 
-    sql = f"SELECT * FROM listings WHERE price >= {data['priceMin']} AND price <= {data['priceMax']}"
+    sql = f"SELECT * FROM listings WHERE price >= {data['priceMin']} AND price <= {data['priceMax']} and name like '%{data['name']}%'"
 
     if data['bedrooms'] != '':
         sql += f" AND beds = {data['bedrooms']}"
