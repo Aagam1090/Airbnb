@@ -29,7 +29,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { UpdateReviewModalComponent } from './components/update-review-modal/update-review-modal.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AddReviewModalComponent } from './components/add-review-modal/add-review-modal.component';
-
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -61,7 +61,8 @@ import { AddReviewModalComponent } from './components/add-review-modal/add-revie
     MatSortModule,
     MatPaginatorModule,
     ReactiveFormsModule,
-    MatDialogModule
+    MatDialogModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]
