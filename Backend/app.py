@@ -1,7 +1,7 @@
 import uuid
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from flask_login import LoginManager, UserMixin, login_user
+from flask_login import LoginManager, UserMixin, login_user, current_user
 from psycopg2 import sql
 import psycopg2
 
@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with your secret key
 
 CORS(app)
-globalUser = None
+
 login_manager = LoginManager(app)
 
 login_manager.init_app(app)
@@ -47,7 +47,6 @@ def login():
     password = data.get('password')
     user = next((u for u in users if u.email == email and u.password == password), None)
     if user:
-        globalUser = user
         login_user(user)
         return jsonify({'success': True, 'message': 'Logged in successfully!'}), 200
     else:
@@ -73,6 +72,8 @@ def search_listing():
     query_params = request.args
 
     data = {key: query_params.getlist(key) if len(query_params.getlist(key)) > 1 else query_params[key] for key in query_params}
+
+    amenities_list = ['Kitchen', 'Iron', 'Wifi', 'Parking','Gym','Pool','Washer','Dryer','Heating','Air conditioning','TV','Cable TV','Elevator','Family/kid friendly','Smoke detector','Carbon monoxide detector','First aid kit','Fire extinguisher','Essentials','Shampoo','Hangers','Hair dryer','Laptop friendly workspace','Private entrance','Hot water']
 
     sql = f"SELECT * FROM listings WHERE price >= {data['priceMin']} AND price <= {data['priceMax']}"
 
@@ -159,6 +160,7 @@ def insert_property():
 
         db_name = city.lower().replace(' ', '_').replace('-', '_')
         conn = get_db_connection(db_name)
+        print("in here")
         insert_property_data(data, conn)
 
         return jsonify({'success': True, 'message': 'Property inserted successfully!'}), 201
@@ -256,12 +258,17 @@ def setup_schema(conn):
             );
         """)
         conn.commit()
+import random
+def my_random(d):
+    ''' Generates a random number with d digits '''
+    return random.randint(int('1'+'0'*(d-1)), int('9'*d))
 
 def insert_property_data(data, conn):
     # Generate unique IDs for listing and review
-    listing_id = str(uuid.uuid4())
-    review_id = "1234567"
-    # print(listing_id,review_id)
+    listing_id = str(my_random(5))
+    id = str(my_random(5))
+    review_id = str(my_random(5))
+    print(listing_id,review_id)
     # print(data['name'])
     with conn.cursor() as cur:
         # Insert into listings
@@ -287,7 +294,7 @@ def insert_property_data(data, conn):
             INSERT INTO reviews (id, reviewer_id, reviewer_name, comments)
             VALUES (%s, %s, %s, %s)
         """, (
-            listing_id,
+            id,
             review_id,
             "default_reviewer",  # Placeholder if not provided
             data['review']
