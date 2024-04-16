@@ -42,5 +42,5 @@
 </div>
 
 <div *ngIf="showReviews">
-  <app-reviews [reviewData]="reviewData" (onListingBack)="handleListingBack()"></app-reviews>
+  <app-reviews [reviewData]="reviewData" [city]="city" (onListingBack)="handleListingBack()"></app-reviews>
 </div>

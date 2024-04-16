@@ -11,6 +11,7 @@ import { ReviewService } from 'src/app/service/review.service';
 })
 export class ReviewsComponent {
   @Input() reviewData: Review[] = [];  // Input for review data
+  @Input() city: string = ''; // Input for city
   @Output() onListingBack = new EventEmitter<void>(); // Event emitter for going back
   displayedColumns: string[] = ['id', 'reviewer_name', 'comments', 'actions'];
   
@@ -29,10 +30,12 @@ export class ReviewsComponent {
     console.log('Review data changed', this.reviewData);
   }
 
-  deleteReview(id: string, city: string) {
-    console.log('Delete review', id, city);
-    this.reviewService.deleteReview(id, city).subscribe({
-      next: (response) => console.log('Delete successful', response),
+  deleteReview(id: string) {
+    this.reviewService.deleteReview(id, this.city).subscribe({
+      next: (response) => {
+        this.dataSource.data = this.dataSource.data.filter(review => review.id !== id);
+        console.log('Delete successful', response);
+      },
       error: (error) => console.error('Error deleting review', error)
     });
   }
