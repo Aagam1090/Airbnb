@@ -6,7 +6,13 @@
     <form (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="exampleInputEmail1">Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" [(ngModel)]="email" [ngModelOptions]="{standalone: true}">
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"
+               [(ngModel)]="email" name="email" #emailModel="ngModel" email required
+               [ngClass]="{'is-invalid': emailModel.invalid && (emailModel.dirty || emailModel.touched)}">
+        <div *ngIf="emailModel.errors && (emailModel.dirty || emailModel.touched)" class="invalid-feedback">
+          <div *ngIf="emailModel.errors['required']">Email is required.</div>
+          <div *ngIf="emailModel.errors['email']">Please enter a valid email address.</div>
+        </div>
       </div>
       <br>
       <div class="form-group">

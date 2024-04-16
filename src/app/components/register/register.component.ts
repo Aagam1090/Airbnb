@@ -21,6 +21,7 @@ export class RegisterComponent {
       console.log('User data:', this.user);
       this.authService.register(this.user.name, this.user.email, this.user.password).subscribe({
         next: () => {
+          this.authService.setLoginStatus(true);
           this.router.navigate(['/search']);  // Navigate on successful registration
         },
         error: (error) => {
