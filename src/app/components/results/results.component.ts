@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild, Input, SimpleChanges, OnChanges,Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, SimpleChanges, OnChanges, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 import { ReviewService } from 'src/app/service/review.service';
 
 @Component({
@@ -8,30 +8,34 @@ import { ReviewService } from 'src/app/service/review.service';
   templateUrl: './results.component.html',
   styleUrls: ['./results.component.css']
 })
-export class ResultsComponent implements OnInit, OnChanges {
-  @Input() dataresponse!: any[];
-  @ViewChild(MatSort, { static: false }) sort: MatSort | null = null;
+export class ResultsComponent implements OnInit, OnChanges, AfterViewInit {
+  @Input() dataresponse!: any[]; // Assuming dataresponse is an array of objects.
   @Output() onBack = new EventEmitter<void>(); 
   showReviews = false;
   showLisiting = true;
   reviewData: any[] = [];
 
-  constructor(private reviewService: ReviewService){}
+  constructor(private reviewService: ReviewService) {}
 
   dataSource = new MatTableDataSource<any>([]);
-
   displayedColumns: string[] = ['name', 'beds', 'price', 'amenities', 'totalRating'];
 
-  ngOnInit(): void {
-    this.updateDataSource();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  ngOnInit() {
+    this.dataSource.data = this.dataresponse || [];
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges) {
     if (changes['dataresponse']) {
-      this.updateDataSource();
+      this.dataSource.data = this.dataresponse;
+      this.dataSource.paginator = this.paginator;
     }
   }
 
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
   goBack() {
     this.onBack.emit(); 
   }
@@ -51,36 +55,7 @@ export class ResultsComponent implements OnInit, OnChanges {
   }
 
   handleListingBack(): void {
-    console.log('Going back to listing');
     this.showReviews = false;
     this.showLisiting = true; // Show the search form again
-  }
-
-  private updateDataSource() {
-    if (this.dataresponse && this.dataresponse.length > 0) {
-      // Slice the array to get the top 10 results and process amenities
-      const topTenResults = this.dataresponse.slice(0, 10).map(item => {
-        // Process amenities to ensure it is an array and only the top three are taken
-        let amenitiesArray = [];
-        if (Array.isArray(item.amenities)) {
-          amenitiesArray = item.amenities;
-        } else if (typeof item.amenities === 'string') {
-          amenitiesArray = item.amenities.split(',').map((a: string) => a.trim());
-        }
-
-        // Get the top three amenities
-        const topThreeAmenities = amenitiesArray.slice(0, 3);
-
-        // Return the modified item with only the top three amenities
-        return {...item, amenities: topThreeAmenities};
-      });
-
-      this.dataSource = new MatTableDataSource<any>(topTenResults);
-      if (this.sort) {
-        this.dataSource.sort = this.sort;
-      }
-    } else {
-      this.dataSource = new MatTableDataSource<any>([]);
-    }
   }
 }

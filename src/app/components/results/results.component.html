@@ -1,54 +1,43 @@
 <div *ngIf="showLisiting">
-  <h2 style="margin-top: 5%; margin-bottom: 0; text-align: center">
-    Airbnb Listings
-  </h2>
-
+  <h2 style="margin-top: 5%; margin-bottom: 0; text-align: center">Airbnb Listings</h2>
   <button class="btn btn-primary backSearch" (click)="goBack()">Search</button>
-
   <div class="mat-elevation-z8 maintab">
-    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+        <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let element">{{ element.name }}</td>
       </ng-container>
 
       <ng-container matColumnDef="beds">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Bedrooms</th>
+        <th mat-header-cell *matHeaderCellDef>Bedrooms</th>
         <td mat-cell *matCellDef="let element">{{ element.beds }}</td>
       </ng-container>
 
       <ng-container matColumnDef="price">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
-        <td mat-cell *matCellDef="let element">
-          {{ element.price | currency }}
-        </td>
+        <th mat-header-cell *matHeaderCellDef>Price</th>
+        <td mat-cell *matCellDef="let element">{{ element.price | currency }}</td>
       </ng-container>
 
       <ng-container matColumnDef="amenities">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Amenities</th>
+        <th mat-header-cell *matHeaderCellDef>Amenities</th>
         <td mat-cell *matCellDef="let element">{{ element.amenities }}</td>
       </ng-container>
 
       <ng-container matColumnDef="totalRating">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Total Rating</th>
-        <td mat-cell *matCellDef="let element">
-          {{ element.review_scores_rating || "N/A" }}
-        </td>
+        <th mat-header-cell *matHeaderCellDef>Total Rating</th>
+        <td mat-cell *matCellDef="let element">{{ element.review_scores_rating || "N/A" }}</td>
       </ng-container>
-      <!-- 
-    <ng-container matColumnDef="detailedReviews">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Detailed Reviews</th>
-      <td mat-cell *matCellDef="let element">{{ element.detailedReviews }}</td>
-    </ng-container> -->
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr
-        mat-row
-        *matRowDef="let row; columns: displayedColumns"
-        [class.clickable]="row.review_scores_rating !== 'N/A'"
-        (click)="row.review_scores_rating !== 'N/A' && storeData(row)"
-      ></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"
+          [class.clickable]="row.review_scores_rating !== 'N/A'"
+          (click)="row.review_scores_rating !== 'N/A' && storeData(row)"></tr>
     </table>
+    <mat-paginator [length]="dataSource.data.length"
+               [pageSize]="10"
+               [pageSizeOptions]="[5, 10, 20]"
+               showFirstLastButtons>
+    </mat-paginator>
   </div>
 </div>
 
