@@ -12,11 +12,12 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   getLoginStatus() {
-    return this.loggedIn;
+    return localStorage.getItem('isLoggedIn') === 'true';
   }
 
   setLoginStatus(status: boolean) {
     this.loggedIn = status;
+    localStorage.setItem('isLoggedIn', status ? 'true' : 'false');
   }
 
   login(email: string, password: string): Observable<HttpResponse<any>> {
