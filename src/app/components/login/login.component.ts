@@ -18,9 +18,15 @@ export class LoginComponent {
 
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
-        console.log('Login successful', response);
-        if (this.authService.getLoginStatus()) {
+        console.log('Login successful', response.status);
+      
+        if (response.status === 200) {
+          this.authService.setLoginStatus(true);
           this.router.navigate(['/search']);
+        }
+        else{
+          this.authService.setLoginStatus(false);
+          console.log('Login failed');
         }
       },
       error: (error) => {
