@@ -227,8 +227,8 @@ def add_review():
     conn = get_db_connection(db_name)
     
     # Generate unique IDs for the new review and listing_review entries
-    new_review_id = str(uuid.uuid4())  # or use your own function
-    new_reviewer_id = str(uuid.uuid4())
+    new_review_id = str(my_random(5))  # or use your own function
+    new_reviewer_id = str(my_random(5))
 
     try:
         with conn.cursor() as cur:

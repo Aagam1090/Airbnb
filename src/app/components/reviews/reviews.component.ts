@@ -41,7 +41,8 @@ export class ReviewsComponent {
   deleteReview(id: string) {
     this.reviewService.deleteReview(id, this.city).subscribe({
       next: (response) => {
-        this.dataSource.data = this.dataSource.data.filter(review => review.id !== id);
+        this.reviewData = this.reviewData.filter(review => review.id !== id);
+        this.dataSource.data = this.reviewData;
         console.log('Delete successful', response);
       },
       error: (error) => console.error('Error deleting review', error)
@@ -91,6 +92,7 @@ export class ReviewsComponent {
             console.log('Review added successfully', response);
             // Add the new review to the beginning of the data array
             this.reviewData = [{ id: response.review_id, reviewer_id: response.reviewer_id, reviewer_name: reviewer_name, comments: result.comments }, ...this.reviewData];
+            this.dataSource.data = this.reviewData;
             
             // Refresh the table's data source
             this.dataSource.data = this.reviewData;
