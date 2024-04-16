@@ -1,80 +1,85 @@
-
 <app-navbar></app-navbar>
 
 <div class="container">
     <mat-card class="card">
         <h2 style="text-align: center;">Insert Property</h2>
         <form [formGroup]="propertyForm" class="property-form" (ngSubmit)="onSubmitPropertyForm()">
-            <!-- Property Name -->
-            <mat-form-field class="full-width-field">
-                <mat-label>Name</mat-label>
-                <input matInput placeholder="Enter Property Name" formControlName="name">
-            </mat-form-field>
+            <div class="form-row">
+                <!-- Left Column -->
+                <div class="form-column">
+                    <!-- Property Name -->
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Name</mat-label>
+                        <input matInput placeholder="Enter Property Name" formControlName="name">
+                    </mat-form-field>
 
-            <!-- Location -->
-            <mat-form-field class="full-width-field">
-                <mat-label>Location</mat-label>
-                <input matInput placeholder="Enter Location" formControlName="location">
-            </mat-form-field>
+                    <!-- Location -->
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Location</mat-label>
+                        <input matInput placeholder="Enter Location" formControlName="location">
+                    </mat-form-field>
 
-            <!-- City -->
-            <mat-form-field class="full-width-field">
-                <mat-label>City</mat-label>
-                <mat-select formControlName="city">
-                  <mat-option *ngFor="let city of cityList" [value]="city">{{ city }}</mat-option>
-                </mat-select>
-              </mat-form-field>
-              
-              <!-- Conditional Text Input for 'Other' City based on a component property -->
-              <mat-form-field class="full-width-field" *ngIf="showOtherCityField">
-                <mat-label>Specify Other City</mat-label>
-                <input matInput placeholder="Enter City" formControlName="otherCity">
-              </mat-form-field>
-              
-              
+                    <!-- City -->
+                    <mat-form-field class="full-width-field">
+                        <mat-label>City</mat-label>
+                        <mat-select formControlName="city">
+                            <mat-option *ngFor="let city of cityList" [value]="city">{{ city }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    
+                    <!-- This field is now always in the DOM but is disabled by default -->
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Specify Other City</mat-label>
+                        <input matInput placeholder="Enter City" formControlName="otherCity" [disabled]="!showOtherCityField">
+                    </mat-form-field>
 
-            <!-- Price -->
-            <mat-form-field class="full-width-field">
-                <mat-label>Price</mat-label>
-                <input matInput type="number" placeholder="Enter Price" formControlName="price">
-            </mat-form-field>
+                    <!-- Price -->
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Price</mat-label>
+                        <input matInput type="number" placeholder="Enter Price" formControlName="price">
+                    </mat-form-field>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="form-column">
+                    <!-- Number of Bedrooms -->
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Number of Bedrooms</mat-label>
+                        <input matInput type="number" placeholder="Enter Number of Bedrooms" formControlName="bedrooms" max="50">
+                    </mat-form-field>
 
-            <!-- Number of Bedrooms -->
-            <mat-form-field class="full-width-field">
-                <mat-label>Number of Bedrooms</mat-label>
-                <input matInput type="number" placeholder="Enter Number of Bedrooms" formControlName="bedrooms" max="50">
-            </mat-form-field>
+                    <!-- Number of Guests -->
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Number of Guests</mat-label>
+                        <input matInput type="number" placeholder="Enter Number of Guests" formControlName="guests" max="100">
+                    </mat-form-field>
 
-            <!-- Number of Guests -->
-            <mat-form-field class="full-width-field">
-                <mat-label>Number of Guests</mat-label>
-                <input matInput type="number" placeholder="Enter Number of Guests" formControlName="guests" max="100">
-            </mat-form-field>
+                    <!-- Number of Bathrooms -->
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Number of Bathrooms</mat-label>
+                        <input matInput type="number" placeholder="Enter Number of Bathrooms" formControlName="bathrooms" max="50">
+                    </mat-form-field>
 
-            <!-- Number of Bedrooms -->
-            <mat-form-field class="full-width-field">
-                <mat-label>Number of Bathroom</mat-label>
-                <input matInput type="number" placeholder="Enter Number of Bathrooms" formControlName="bathrooms" max="50">
-            </mat-form-field>
+                    <!-- Amenities -->
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Amenities</mat-label>
+                        <input matInput placeholder="Enter Amenities, comma separated" formControlName="amenities">
+                    </mat-form-field>
 
-            <!-- Amenities -->
-            <mat-form-field class="full-width-field">
-                <mat-label>Amenities</mat-label>
-                <input matInput placeholder="Enter Amenities, comma separated" formControlName="amenities">
-            </mat-form-field>
-
-            <!-- Property Type -->
-            <mat-form-field class="full-width-field">
-                <mat-label>Property Type</mat-label>
-                <mat-select formControlName="propertyType">
-                    <mat-option value="villas">Villas</mat-option>
-                    <mat-option value="entireCondo">Entire Condo</mat-option>
-                    <mat-option value="entireApartment">Entire Apartment</mat-option>
-                    <mat-option value="castle">Castle</mat-option>
-                    <mat-option value="sharedRoom">Shared Room</mat-option>
-                    <mat-option value="privateRoom">Private Room</mat-option>
-                </mat-select>
-            </mat-form-field>
+                    <!-- Property Type -->
+                    <mat-form-field class="full-width-field">
+                        <mat-label>Property Type</mat-label>
+                        <mat-select formControlName="propertyType">
+                            <mat-option value="villas">Villas</mat-option>
+                            <mat-option value="entireCondo">Entire Condo</mat-option>
+                            <mat-option value="entireApartment">Entire Apartment</mat-option>
+                            <mat-option value="castle">Castle</mat-option>
+                            <mat-option value="sharedRoom">Shared Room</mat-option>
+                            <mat-option value="privateRoom">Private Room</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
 
             <!-- Total Rating -->
             <mat-form-field class="full-width-field">
