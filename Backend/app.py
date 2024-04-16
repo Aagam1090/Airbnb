@@ -202,7 +202,6 @@ def delete_review():
 @app.route('/updateReview/<review_id>', methods=['PUT'])
 def update_review(review_id):
     data = request.get_json()
-    print(data)
     city = data['city']  # Use city in your database queries if needed
     db_name = city.lower().replace(' ', '_').replace('-', '_')  # For database selection
     conn = get_db_connection(db_name)
@@ -219,6 +218,39 @@ def update_review(review_id):
     finally:
         if conn:
             conn.close()
+
+@app.route('/addReview', methods=['POST'])
+def add_review():
+    data = request.get_json()
+    city = data['city']  # Use city in your database queries if needed
+    db_name = city.lower().replace(' ', '_').replace('-', '_')  # For database selection
+    conn = get_db_connection(db_name)
+    
+    # Generate unique IDs for the new review and listing_review entries
+    new_review_id = str(uuid.uuid4())  # or use your own function
+    new_reviewer_id = str(uuid.uuid4())
+
+    try:
+        with conn.cursor() as cur:
+            # Insert into reviews table
+            cur.execute("""
+                INSERT INTO reviews (id, reviewer_id, reviewer_name, comments)
+                VALUES (%s, %s, %s, %s)
+            """, (new_review_id, new_reviewer_id, data['reviewer_name'], data['comments']))
+            
+            # Insert into listings_reviews linking table
+            cur.execute("""
+                INSERT INTO listings_reviews (listing_id, review_id)
+                VALUES (%s, %s)
+            """, (data['listing_id'], new_review_id))
+            conn.commit()
+            
+            return jsonify({'success': True, 'message': 'New review added successfully', 'review_id': new_review_id, 'reviewer_id': new_reviewer_id}), 201
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        conn.close()
 
 def create_city_database(conn, city):
     with conn.cursor() as cur:

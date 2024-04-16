@@ -28,6 +28,7 @@ import { ReviewsComponent } from './components/reviews/reviews.component';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { UpdateReviewModalComponent } from './components/update-review-modal/update-review-modal.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { AddReviewModalComponent } from './components/add-review-modal/add-review-modal.component';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     SearchComponent,
     ResultsComponent,
     ReviewsComponent,
-    UpdateReviewModalComponent
+    UpdateReviewModalComponent,
+    AddReviewModalComponent
   ],
   imports: [
     BrowserModule,
