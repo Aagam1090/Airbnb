@@ -41,7 +41,7 @@ def process_and_save_files(source_directory, destination_directory):
             if os.path.exists(listings_source_path):
                 df_listings = pd.read_csv(listings_source_path)
                 # Filter and process the data
-                df_listings = df_listings[['id', 'name', 'host_location', 'property_type', 'accommodates', 'bathrooms_text', 'beds', 'amenities', 'price', 'review_scores_rating']]
+                df_listings = df_listings[['id', 'name', 'neighbourhood_cleansed', 'property_type', 'accommodates', 'bathrooms_text', 'beds', 'amenities', 'price', 'review_scores_rating']]
 
                 # Remove $ sign from price and convert to float
                 df_listings['price'] = df_listings['price'].replace('[\$,]', '', regex=True).astype(float)
