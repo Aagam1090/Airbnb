@@ -34,6 +34,7 @@ export class SearchComponent {
       people: ['', [Validators.min(1), Validators.max(30)]],
       amenities: [this.getDefaultAmenities()],
       rating: ['', [Validators.min(1), Validators.max(10)]],
+      neighborhood: ['']
     }, { validators: this.priceRangeValidator });
   }
 
@@ -65,6 +66,11 @@ export class SearchComponent {
     } else {
       console.error('Form is not valid');
     }
+  }
+
+  handleBack(): void {
+    this.displayResults = false;
+    this.displayForm = true; // Show the search form again
   }
 
 }

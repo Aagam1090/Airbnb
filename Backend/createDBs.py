@@ -29,7 +29,7 @@ def insert_data_into_tables(city_path, connection):
     listings_dtype_spec = {
         'id': str,
         'name': str,
-        'host_location': str,
+        'neighbourhood_cleansed': str,
         'property_type': str,
         'accommodates': int,
         'bathrooms': str,
@@ -92,7 +92,7 @@ def setup_schema_and_tables(user, password, host, city_path, city_db):
             CREATE TABLE IF NOT EXISTS listings (
                 id TEXT PRIMARY KEY,
                 name TEXT,
-                host_location VARCHAR(255),
+                neighbourhood_cleansed VARCHAR(255),
                 property_type VARCHAR(255), 
                 accommodates INT, 
                 bathrooms_text VARCHAR(255), 
