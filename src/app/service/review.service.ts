@@ -21,4 +21,9 @@ export class ReviewService {
   deleteReview(reviewId: string, city: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/deleteReview`, { review_id: reviewId, city: city });
   }
+
+  updateReview(id: string, reviewData: any): Observable<any> {
+    console.log('Updating review:', id, reviewData);
+    return this.http.put(`${this.apiUrl}/updateReview/${id}`, reviewData);
+  }
 }

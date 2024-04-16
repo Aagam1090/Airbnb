@@ -199,6 +199,27 @@ def delete_review():
         if conn:
             conn.close()
 
+@app.route('/updateReview/<review_id>', methods=['PUT'])
+def update_review(review_id):
+    data = request.get_json()
+    print(data)
+    city = data['city']  # Use city in your database queries if needed
+    db_name = city.lower().replace(' ', '_').replace('-', '_')  # For database selection
+    conn = get_db_connection(db_name)
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE reviews SET comments = %s WHERE id = %s
+            """, (data['comments'], review_id))
+            conn.commit()
+            return jsonify({'success': True, 'message': 'Review updated successfully'}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
 def create_city_database(conn, city):
     with conn.cursor() as cur:
         db_name = city.lower().replace(' ', '_').replace('-', '_')

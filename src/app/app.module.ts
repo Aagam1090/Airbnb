@@ -26,7 +26,8 @@ import { ResultsComponent } from './components/results/results.component';
 import { MatSortModule } from '@angular/material/sort';
 import { ReviewsComponent } from './components/reviews/reviews.component';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-
+import { UpdateReviewModalComponent } from './components/update-review-modal/update-review-modal.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
     InsertComponent,
     SearchComponent,
     ResultsComponent,
-    ReviewsComponent
+    ReviewsComponent,
+    UpdateReviewModalComponent
   ],
   imports: [
     BrowserModule,
@@ -56,7 +58,8 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

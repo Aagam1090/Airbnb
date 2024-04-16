@@ -3,12 +3,15 @@ import { OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { ReviewService } from 'src/app/service/review.service';
+import { MatDialog } from '@angular/material/dialog';
+import { UpdateReviewModalComponent } from '../update-review-modal/update-review-modal.component';
 
 @Component({
   selector: 'app-reviews',
   templateUrl: './reviews.component.html',
   styleUrls: ['./reviews.component.css']
 })
+
 export class ReviewsComponent {
   @Input() reviewData: Review[] = [];  // Input for review data
   @Input() city: string = ''; // Input for city
@@ -19,7 +22,10 @@ export class ReviewsComponent {
 
   @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
 
-  constructor(private reviewService: ReviewService) {}
+  constructor(
+    private reviewService: ReviewService,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.dataSource.data = this.reviewData; 
@@ -40,9 +46,31 @@ export class ReviewsComponent {
     });
   }
 
-  updateReview(id: string) {
-    console.log('Update review', id);
-    // Implement update logic
+  updateReview(review: any): void {
+    const dialogRef = this.dialog.open(UpdateReviewModalComponent, {
+      width: '250px',
+      data: { id: review.id, reviewer_name: review.reviewer_name, comments: review.comments, city: this.city}
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('The dialog was closed', result, review);
+        this.reviewService.updateReview(review.id, result).subscribe({
+          next: response => {
+            console.log('Review updated successfully', response);
+            // Update the local data without reloading from the server
+            const index = this.dataSource.data.findIndex(item => item.id === review.id);
+            if (index !== -1) {
+              // Replace the item at the found index with updated data
+              this.dataSource.data[index] = {...this.dataSource.data[index], ...result};
+              // Notify the table that the data has changed
+              this.dataSource.data = [...this.dataSource.data];
+            }
+          },
+          error: error => console.error('Error updating review', error)
+        });
+      }
+    });
   }
   
   goBackListing(){

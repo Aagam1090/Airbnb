@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Update Review</h1>
+<hr>
+<div mat-dialog-content>
+    <p><strong>Reviewer:</strong> {{data.reviewer_name}}</p>
+  <form [formGroup]="updateForm">
+    <mat-form-field>
+      <mat-label>Comments</mat-label>
+      <textarea matInput formControlName="comments"></textarea>
+    </mat-form-field>
+  </form>
+</div>
+
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button [mat-dialog-close]="updateForm.value" [disabled]="updateForm.pristine" cdkFocusInitial>Update</button>
+</div>
