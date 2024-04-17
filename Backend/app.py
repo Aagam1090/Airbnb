@@ -427,6 +427,25 @@ def upload_csv():
 
     return jsonify({'message': 'File uploaded and processed successfully!'}), 200
 
+@app.route('/removeAllReviews', methods=['GET'])
+def removeReviews():
+    listing_id = request.args.get('listing_id')
+    city = request.args.get('city').lower().replace(' ', '_').replace('-', '_')
+    db_name = city[0]
+    conn = get_db_connection(db_name)
+    try:
+        with conn.cursor() as cur:
+            cur.execute(f"DELETE FROM {city}.reviews WHERE id IN (SELECT review_id FROM {city}.listings_reviews WHERE listing_id = %s OR listing_id = %s)", (f"{listing_id}", f"{listing_id}.0"))
+            cur.execute(f"DELETE FROM {city}.listings_reviews WHERE listing_id = %s", (listing_id,))
+            conn.commit()
+            return jsonify({'success': True, 'message': 'Reviews deleted successfully!'}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
 
 if __name__ == '__main__':
     app.run(debug=True)
