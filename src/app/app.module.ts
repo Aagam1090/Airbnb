@@ -28,7 +28,8 @@ import { ReviewsComponent } from './components/reviews/reviews.component';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { UpdateReviewModalComponent } from './components/update-review-modal/update-review-modal.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { BulkInsertComponent } from './components/bulk-insert/bulk-insert.component';
+import { AddReviewModalComponent } from './components/add-review-modal/add-review-modal.component';
+import { MatIconModule } from '@angular/material/icon';import { BulkInsertComponent } from './components/bulk-insert/bulk-insert.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 @NgModule({
@@ -43,6 +44,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
     ResultsComponent,
     ReviewsComponent,
     UpdateReviewModalComponent,
+    AddReviewModalComponent,
     BulkInsertComponent
   ],
   imports: [
@@ -62,6 +64,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
     MatPaginatorModule,
     ReactiveFormsModule,
     MatDialogModule,
+    MatIconModule,
     NgxDatatableModule,
   ],
   providers: [],

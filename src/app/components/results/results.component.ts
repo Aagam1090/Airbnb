@@ -15,6 +15,7 @@ export class ResultsComponent implements OnInit, OnChanges, AfterViewInit {
   showLisiting = true;
   reviewData: any[] = [];
   city: string = '';
+  listingId: string = '';
 
   constructor(private reviewService: ReviewService) {}
 
@@ -76,6 +77,7 @@ export class ResultsComponent implements OnInit, OnChanges, AfterViewInit {
         data => {
           console.log('Reviews:', data);
           this.reviewData = data;
+          this.listingId = row.id;
           this.city = row.city;
           this.showReviews = true;
           this.showLisiting = false;

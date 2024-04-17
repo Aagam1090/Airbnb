@@ -9,6 +9,7 @@ import io
 import random
 import string
 from tempfile import SpooledTemporaryFile
+import random
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with your secret key
@@ -78,9 +79,11 @@ def search_listing():
 
     data = {key: query_params.getlist(key) if len(query_params.getlist(key)) > 1 else query_params[key] for key in query_params}
 
+    city = data.get('city').lower().replace(' ', '_').replace('-', '_')
+
     amenities_list = ['Kitchen', 'Iron', 'Wifi', 'Parking','Gym','Pool','Washer','Dryer','Heating','Air conditioning','TV','Cable TV','Elevator','Family/kid friendly','Smoke detector','Carbon monoxide detector','First aid kit','Fire extinguisher','Essentials','Shampoo','Hangers','Hair dryer','Laptop friendly workspace','Private entrance','Hot water']
 
-    sql = f"SELECT * FROM listings WHERE price >= {data['priceMin']} AND price <= {data['priceMax']} and name like '%{data['name']}%'"
+    sql = f"SELECT * FROM {city}.listings WHERE price >= {data['priceMin']} AND price <= {data['priceMax']} and name like '%{data['name']}%'"
 
     if data['bedrooms'] != '':
         sql += f" AND beds = {data['bedrooms']}"
@@ -97,7 +100,7 @@ def search_listing():
             # Add the LIKE condition for the current element to the SQL query
             sql += f" AND amenities LIKE '%{element}%' "
 
-    db_name = data['city'].lower().replace(' ','_')
+    db_name = city[0]
     conn = get_db_connection(db_name)
     cursor = conn.cursor() 
     cursor.execute(sql)
@@ -117,14 +120,14 @@ def search_listing():
 def get_Reviews():
     data = request.args
     listing_id = data.get('listing_id')
-    city = data.get('city')
-    db_name = city.lower().replace(' ', '_').replace('-', '_')
+    city = data.get('city').lower().replace(' ', '_').replace('-', '_')
+    db_name = city[0]
     conn = get_db_connection(db_name)
     cursor = conn.cursor()
-    cursor.execute("""
-    SELECT * FROM reviews
-    INNER JOIN listings_reviews ON reviews.id = listings_reviews.review_id
-    WHERE listings_reviews.listing_id = %s OR listings_reviews.listing_id = %s
+    cursor.execute(f"""
+    SELECT * FROM {city}.reviews
+    INNER JOIN {city}.listings_reviews ON {city}.reviews.id = {city}.listings_reviews.review_id
+    WHERE {city}.listings_reviews.listing_id = %s OR {city}.listings_reviews.listing_id = %s
     """, (f"{listing_id}.0", str(listing_id)))
     rows = cursor.fetchall()
     res = []
@@ -153,7 +156,7 @@ def get_cities():
 @app.route('/insert', methods=['POST'])
 def insert_property():
     data = request.get_json()
-    city = data.get('city') 
+    city = data.get('city').lower().replace(' ', '_').replace('-', '_')
     conn = get_db_connection("cities")
 
     try:
@@ -163,10 +166,10 @@ def insert_property():
             db_name = create_city_database(conn, city)
             conn.close()  
 
-        db_name = city.lower().replace(' ', '_').replace('-', '_')
+        db_name = city[0]
         conn = get_db_connection(db_name)
         print("in here")
-        insert_property_data(data, conn)
+        insert_property_data(data, conn, city)
 
         return jsonify({'success': True, 'message': 'Property inserted successfully!'}), 201
     except Exception as e:
@@ -179,20 +182,20 @@ def insert_property():
 def delete_review():
     data = request.get_json()
     review_id = data.get('review_id')
-    city = data.get('city')
+    city = data.get('city').lower().replace(' ', '_').replace('-', '_')
 
     if not review_id:
         return jsonify({'success': False, 'message': 'Failure'}), 400
 
-    db_name = city.lower().replace(' ', '_').replace('-', '_')
+    db_name = city[0]
     conn = get_db_connection(db_name)
 
     try:
         with conn.cursor() as cur:
             # Delete from listings_reviews first to maintain referential integrity
-            cur.execute("DELETE FROM listings_reviews WHERE review_id = %s", (review_id,))
+            cur.execute(f"DELETE FROM {city}.listings_reviews WHERE review_id = %s", (review_id,))
             # Delete from reviews
-            cur.execute("DELETE FROM reviews WHERE id = %s", (review_id,))
+            cur.execute(f"DELETE FROM {city}.reviews WHERE id = %s", (review_id,))
 
             conn.commit()  # Ensure changes are committed to the database
 
@@ -207,14 +210,13 @@ def delete_review():
 @app.route('/updateReview/<review_id>', methods=['PUT'])
 def update_review(review_id):
     data = request.get_json()
-    print(data)
-    city = data['city']  # Use city in your database queries if needed
-    db_name = city.lower().replace(' ', '_').replace('-', '_')  # For database selection
+    city = data['city'].lower().replace(' ', '_').replace('-', '_')  # Use city in your database queries if needed
+    db_name = city[0]  # For database selection
     conn = get_db_connection(db_name)
     try:
         with conn.cursor() as cur:
-            cur.execute("""
-                UPDATE reviews SET comments = %s WHERE id = %s
+            cur.execute(f"""
+                UPDATE {city}.reviews SET comments = %s WHERE id = %s
             """, (data['comments'], review_id))
             conn.commit()
             return jsonify({'success': True, 'message': 'Review updated successfully'}), 200
@@ -225,15 +227,48 @@ def update_review(review_id):
         if conn:
             conn.close()
 
+@app.route('/addReview', methods=['POST'])
+def add_review():
+    data = request.get_json()
+    city = data['city'].lower().replace(' ', '_').replace('-', '_')  # Use city in your database queries if needed
+    db_name = city[0]  # For database selection
+    conn = get_db_connection(db_name)
+    
+    # Generate unique IDs for the new review and listing_review entries
+    new_review_id = str(my_random(5))  # or use your own function
+    new_reviewer_id = str(my_random(5))
+
+    try:
+        with conn.cursor() as cur:
+            # Insert into reviews table
+            cur.execute(f"""
+                INSERT INTO {city}.reviews (id, reviewer_id, reviewer_name, comments)
+                VALUES (%s, %s, %s, %s)
+            """, (new_review_id, new_reviewer_id, data['reviewer_name'], data['comments']))
+            
+            # Insert into listings_reviews linking table
+            cur.execute(f"""
+                INSERT INTO {city}.listings_reviews (listing_id, review_id)
+                VALUES (%s, %s)
+            """, (data['listing_id'], new_review_id))
+            conn.commit()
+            
+            return jsonify({'success': True, 'message': 'New review added successfully', 'review_id': new_review_id, 'reviewer_id': new_reviewer_id}), 201
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        conn.close()
+
 def create_city_database(conn, city):
     with conn.cursor() as cur:
-        db_name = city.lower().replace(' ', '_').replace('-', '_')
+        db_name = city[0]
         cur.execute("INSERT INTO city_info (city_name, db_name) VALUES (%s, %s)", (city, db_name))
         conn.commit()
-        create_new_city_database(db_name)
+        create_new_city_database(db_name, city)
         return db_name
 
-def create_new_city_database(db_name):
+def create_new_city_database(db_name, city):
 
     conn1 = psycopg2.connect(database="postgres", user="postgres", password="toor", host="localhost")
     conn1.autocommit = True
@@ -253,13 +288,24 @@ def create_new_city_database(db_name):
 
     # Connect to the new database and set up schema
     conn = get_db_connection(db_name)
-    setup_schema(conn)
+    create_schema_if_not_exists(city, conn)
+    setup_schema(conn, city)
     conn.close()
 
-def setup_schema(conn):
+def create_schema_if_not_exists(schema_name, connection):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
+            connection.commit()
+            print(f"Schema {schema_name} created or already exists.")
+    except psycopg2.Error as e:
+        print(f"Failed to create or check schema {schema_name}: {e.pgerror}")
+        connection.rollback()
+
+def setup_schema(conn, city):
     with conn.cursor() as cur:
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS listings (
+        cur.execute(f"""
+            CREATE TABLE IF NOT EXISTS {city}.listings (
                 id TEXT PRIMARY KEY,
                 name TEXT,
                 host_location VARCHAR(255),
@@ -271,25 +317,25 @@ def setup_schema(conn):
                 price FLOAT, 
                 review_scores_rating FLOAT
             );
-            CREATE TABLE IF NOT EXISTS reviews (
+            CREATE TABLE IF NOT EXISTS {city}.reviews (
                 id TEXT PRIMARY KEY,
                 reviewer_id TEXT,
                 reviewer_name TEXT,
                 comments TEXT
             );
-            CREATE TABLE IF NOT EXISTS listings_reviews (
+            CREATE TABLE IF NOT EXISTS {city}.listings_reviews (
                 listing_id TEXT,
                 review_id TEXT,
                 PRIMARY KEY (listing_id, review_id)
             );
         """)
         conn.commit()
-import random
+
 def my_random(d):
     ''' Generates a random number with d digits '''
     return random.randint(int('1'+'0'*(d-1)), int('9'*d))
 
-def insert_property_data(data, conn):
+def insert_property_data(data, conn, city):
     # Generate unique IDs for listing and review
     listing_id = str(my_random(5))
     id = str(my_random(5))
@@ -299,8 +345,8 @@ def insert_property_data(data, conn):
     with conn.cursor() as cur:
         # Insert into listings
         
-        cur.execute("""
-            INSERT INTO listings (id, name, host_location, property_type, accommodates, bathrooms_text, beds, amenities, price, review_scores_rating)
+        cur.execute(f"""
+            INSERT INTO {city}.listings (id, name, host_location, property_type, accommodates, bathrooms_text, beds, amenities, price, review_scores_rating)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             listing_id,
@@ -316,8 +362,8 @@ def insert_property_data(data, conn):
         ))
         # print("Listings data inserted successfully.")
         # Insert into reviews
-        cur.execute("""
-            INSERT INTO reviews (id, reviewer_id, reviewer_name, comments)
+        cur.execute(f"""
+            INSERT INTO {city}.reviews (id, reviewer_id, reviewer_name, comments)
             VALUES (%s, %s, %s, %s)
         """, (
             id,
@@ -327,8 +373,8 @@ def insert_property_data(data, conn):
         ))
 
         # Insert into listings_reviews linking table
-        cur.execute("""
-            INSERT INTO listings_reviews (listing_id, review_id)
+        cur.execute(f"""
+            INSERT INTO {city}.listings_reviews (listing_id, review_id)
             VALUES (%s, %s)
         """, (listing_id, review_id))
 
