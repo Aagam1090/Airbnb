@@ -394,8 +394,8 @@ def insert_property_data(data, conn, city):
 def insert_data(cursor, listing_id, city, comment):
     review_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
     try:
-        cursor.execute("INSERT INTO reviews VALUES (%s, 0000, 'admin', %s)", (review_id, comment))
-        cursor.execute("INSERT INTO listings_reviews VALUES (%s, %s)", (listing_id,review_id))
+        cursor.execute(f"INSERT INTO {city.lower().replace(' ', '_').replace('-', '_')}.reviews VALUES (%s, 0000, 'admin', %s)", (review_id, comment))
+        cursor.execute(f"INSERT INTO {city.lower().replace(' ', '_').replace('-', '_')}.listings_reviews VALUES (%s, %s)", (listing_id,review_id))
     except psycopg2.Error as e:
         print(f"Error inserting data: {e}")
 
@@ -417,7 +417,7 @@ def upload_csv():
     print(grouped_data)
 
     for city, records in grouped_data.items():
-        conn = get_db_connection(city.lower().replace(' ', '_').replace('-', '_'))
+        conn = get_db_connection(city[0].lower())
         if conn:
             with conn.cursor() as cursor:
                 for record in records:

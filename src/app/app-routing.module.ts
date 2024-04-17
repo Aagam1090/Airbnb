@@ -16,7 +16,7 @@ const routes: Routes = [
   { path: 'search', component: SearchComponent ,canActivate: [AuthGuard] },
   { path: 'insert', component: InsertComponent, canActivate: [AuthGuard]  },
   { path: 'logout', component: HomeComponent },
-  { path: 'bulk-insert', component: BulkInsertComponent}
+  { path: 'bulk-insert', component: BulkInsertComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({

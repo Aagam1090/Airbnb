@@ -14,9 +14,11 @@
         <img [src]="'assets/img/logo.png'" alt="Airbnb Logo" height="30px" width="30px" class="mr-2 py-1 px-1">
         Airbnb Review
     </a>
-    <div>
+    <div
+    >
         <a class="navbar-sublink mr-3" [routerLink]="['/search']"> Search </a>
         <a class="navbar-sublink" [routerLink]="['/insert']"> Insert</a>
+        <a class="navbar-sublink" [routerLink]="['/bulk-insert']"> Bulk Insert</a>
         <a class="navbar-sublink"  (click)="logout()"> Logout</a>
     </div>
 </nav>
