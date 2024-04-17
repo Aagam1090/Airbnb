@@ -4,6 +4,7 @@
 
   <button class="btn btn-primary backSearch" (click)="goBackListing()">Back to Listings</button>
   <button class="btn btn-primary backSearch" (click)="addReview()">Add Review</button>
+  <button class="btn btn-primary backSearch" (click)="deleteAllReviews()" *ngIf="isAdmin()" >Delete All Reviews</button>
 
   <div *ngIf="dataSource.data.length > 0; else noReviewsFound" class="mat-elevation-z8 tablediv">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">

@@ -21,4 +21,11 @@ export class NavbarComponent {
     localStorage.setItem('userType', 'normal');
     this.router.navigate(['/logout']);
   }
+
+  isAdmin(){
+    if(localStorage.getItem('userType') == 'admin'){
+      return true;
+    }
+    return false;
+  }
 }

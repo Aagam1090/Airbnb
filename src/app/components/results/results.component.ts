@@ -75,6 +75,7 @@ export class ResultsComponent implements OnInit, OnChanges, AfterViewInit, OnDes
   }
 
   storeData(row: any) {
+    console.log('Row:', row);
     if (row.review_scores_rating !== 'N/A') {
       const sub = this.reviewService.getReviews(row.id, row.city).subscribe(
         data => {

@@ -18,7 +18,7 @@
     >
         <a class="navbar-sublink mr-3" [routerLink]="['/search']"> Search </a>
         <a class="navbar-sublink" [routerLink]="['/insert']"> Insert</a>
-        <a class="navbar-sublink" [routerLink]="['/bulk-insert']"> Bulk Insert</a>
+        <a class="navbar-sublink" [routerLink]="['/bulk-insert']" *ngIf="isAdmin()"> Bulk Insert</a>
         <a class="navbar-sublink"  (click)="logout()"> Logout</a>
     </div>
 </nav>

@@ -6,6 +6,7 @@ import { ReviewService } from 'src/app/service/review.service';
 import { MatDialog } from '@angular/material/dialog';
 import { UpdateReviewModalComponent } from '../update-review-modal/update-review-modal.component';
 import { AddReviewModalComponent } from '../add-review-modal/add-review-modal.component';
+import { DeleteAllReviewService } from 'src/app/service/delete-all-review.service';
 
 @Component({
   selector: 'app-reviews',
@@ -26,7 +27,7 @@ export class ReviewsComponent {
 
   @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
 
-  constructor(private reviewService: ReviewService, public dialog: MatDialog) {}
+  constructor(private reviewService: ReviewService, public dialog: MatDialog, private delService: DeleteAllReviewService) {}
 
   ngOnInit() {
     this.dataSource.data = this.reviewData;
@@ -117,6 +118,21 @@ export class ReviewsComponent {
     const loggedInReviewerName = localStorage.getItem("name");
 
     return reviewerName === loggedInReviewerName || loggedInReviewerName === 'Admin';
+  }
+
+  deleteAllReviews() {
+    this.delService.removeReviews(this.listingId, this.city).subscribe({
+      next: (response) => {
+        console.log('Delete all reviews successful', response);
+        this.reviewData = [];
+        this.dataSource.data = this.reviewData;
+      },
+      error: (error) => console.error('Error deleting all reviews', error)
+    });
+  }
+
+  isAdmin(): boolean {
+    return localStorage.getItem("name") === 'Admin';
   }
 }
 
