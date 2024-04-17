@@ -8,6 +8,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./add-review-modal.component.css']
 })
 export class AddReviewModalComponent {
+  public reviewerName: string;
   addForm = new FormGroup({
     comments: new FormControl('', [Validators.required]),
     // Add other controls as necessary
@@ -15,7 +16,9 @@ export class AddReviewModalComponent {
 
   constructor(
     public dialogRef: MatDialogRef<AddReviewModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {}
+    @Inject(MAT_DIALOG_DATA) public data: any) {
+      this.reviewerName = data.reviewerName;
+    }
 
   onNoClick(): void {
     this.dialogRef.close();

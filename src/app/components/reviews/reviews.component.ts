@@ -83,16 +83,17 @@ export class ReviewsComponent {
   }
 
   addReview(): void {
+    const reviewer_name = localStorage.getItem('name') ?? '';
     const dialogRef = this.dialog.open(AddReviewModalComponent, {
-      width: '250px'
+      width: '250px',
+      data: { reviewerName: reviewer_name }
     });
   
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Add dialog was closed', result);
+        console.log('Add dialog was closed..', result);
         // Generate a new review ID here or in the backend
         const listingId = this.listingId; // The ID of the listing being reviewed
-        const reviewer_name = 'Admin'; // The name of the reviewer
         this.reviewService.addReview(listingId, result.comments, reviewer_name, this.city).subscribe({
           next: response => {
             console.log('Review added successfully', response);
