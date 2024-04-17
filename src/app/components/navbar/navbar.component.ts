@@ -18,6 +18,7 @@ export class NavbarComponent {
 
   logout(){
     this.authService.setLoginStatus(false);
+    localStorage.setItem('userType', 'normal');
     this.router.navigate(['/logout']);
   }
 }

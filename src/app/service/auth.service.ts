@@ -24,9 +24,12 @@ export class AuthService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     }).pipe(
       tap(res => {
-        const response = res as { success: boolean, message: string };
+        const response = res as {
+           success: boolean, message: string , name: string
+};
         if (response.success) {
           this.setLoginStatus(true);
+          localStorage.setItem('name',response.name);
         } else {
           throw new Error(response.message || 'Unknown error during login');
         }

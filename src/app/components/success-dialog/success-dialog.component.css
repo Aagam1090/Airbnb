@@ -1,0 +1,11 @@
+h1 {
+    color: #1976d2;  /* Blue color matching Angular Material default theme */
+  }
+  p {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+  button {
+    min-width: 100px;  /* Ensures the button is not too small */
+  }
+  
