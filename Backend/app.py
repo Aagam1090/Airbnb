@@ -1,3 +1,4 @@
+import json
 import uuid
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -21,7 +22,7 @@ login_manager = LoginManager(app)
 login_manager.init_app(app)
 
 def get_db_connection(database_name):
-    conn = psycopg2.connect(database=database_name, user="postgres", password="admin", host="localhost")
+    conn = psycopg2.connect(database=database_name, user="postgres", password="toor", host="localhost")
     return conn
 
 # A simple user model (you may need to replace this with your database model)
@@ -265,7 +266,7 @@ def add_review():
 def create_city_database(conn, city):
     with conn.cursor() as cur:
         db_name = city.lower().replace(' ', '_').replace('-', '_')[0]
-        cur.execute("INSERT INTO city_info (city_name, db_name) VALUES (%s, %s)", (city, db_name))
+        cur.execute("INSERT INTO city_info (city_name, db_name) VALUES (%s, %s) ON CONFLICT (city_name) DO NOTHING", (city, db_name))
         conn.commit()
         create_new_city_database(db_name, city)
         return db_name
@@ -345,12 +346,18 @@ def insert_property_data(data, conn, city):
     id = str(my_random(5))
     review_id = str(my_random(5))
     print(listing_id,review_id)
-    # print(data['name'])
+
+    # Convert the comma-separated string into a list
+    amenities_list = data['amenities'].split(',')
+
+    # Now convert the list into a JSON string
+    amenities_json = json.dumps([amenity.strip() for amenity in amenities_list])
+
     with conn.cursor() as cur:
         # Insert into listings
         
         cur.execute(f"""
-            INSERT INTO {city}.listings (id, name, host_location, property_type, accommodates, bathrooms_text, beds, amenities, price, review_scores_rating)
+            INSERT INTO {city}.listings (id, name, neighbourhood_cleansed, property_type, accommodates, bathrooms_text, beds, amenities, price, review_scores_rating)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             listing_id,
@@ -360,7 +367,7 @@ def insert_property_data(data, conn, city):
             str(data['guests']),  # Assuming guests maps to accommodates
             str(data['bathrooms'])+" baths",  # Defaulting beds to 1 if not provided
             str(data['bedrooms']),
-            data['amenities'],
+            amenities_json,
             float(data['price']),
             float(data['rating'])  # Assuming rating maps to review_scores_rating
         ))
