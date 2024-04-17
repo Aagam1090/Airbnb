@@ -63,7 +63,7 @@ def login():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
-    fullname = data.get('fullname')
+    fullname = data.get('name')
     email = data.get('email')
     password = data.get('password')
 
@@ -72,7 +72,7 @@ def register():
     new_user = User(id=len(users)+1, name=fullname, email=email, password=hashed_password)
     users.append(new_user)
 
-    return jsonify({'success': True, 'message': 'Registered successfully!'}), 201
+    return jsonify({'success': True, 'message': 'Registered successfully!', 'name': fullname}), 201
 
 @app.route('/search', methods=['GET'])
 def search_listing():
