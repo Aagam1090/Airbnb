@@ -14,28 +14,33 @@ import { AddReviewModalComponent } from '../add-review-modal/add-review-modal.co
 })
 
 export class ReviewsComponent {
-  @Input() reviewData: Review[] = [];  // Input for review data
+  @Input() reviewData: Review[] = [];
+  @Output() onListingBack = new EventEmitter<void>();
+
   @Input() city: string = ''; // Input for city
   @Input() listingId: string = ''; // Input for listing id
-  @Output() onListingBack = new EventEmitter<void>(); // Event emitter for going back
+
+
   displayedColumns: string[] = ['id', 'reviewer_name', 'comments', 'actions'];
-  
-  dataSource = new MatTableDataSource<Review>(this.reviewData); // Your data array
+  dataSource = new MatTableDataSource<Review>();
 
-  @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
+  @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
 
-  constructor(
-    private reviewService: ReviewService,
-    public dialog: MatDialog
-  ) {}
+  constructor(private reviewService: ReviewService, public dialog: MatDialog) {}
 
   ngOnInit() {
-    this.dataSource.data = this.reviewData; 
+    this.dataSource.data = this.reviewData;
+  }
+
+  ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
 
   ngOnChanges() {
-    console.log('Review data changed', this.reviewData);
+    this.dataSource.data = this.reviewData;
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
   }
 
   deleteReview(id: string) {
