@@ -107,6 +107,12 @@ export class ReviewsComponent {
     console.log('Going back to listing');
     this.onListingBack.emit();
   }
+  isAuthorized(reviewerName: string): boolean {
+    
+    const loggedInReviewerName = localStorage.getItem("name");
+
+    return reviewerName === loggedInReviewerName || loggedInReviewerName === 'Admin';
+  }
 }
 
 interface Review {

@@ -4,6 +4,11 @@ from flask_cors import CORS
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from psycopg2 import sql
 import psycopg2
+import csv
+import io
+import random
+import string
+from tempfile import SpooledTemporaryFile
 import random
 
 app = Flask(__name__)
@@ -16,7 +21,7 @@ login_manager = LoginManager(app)
 login_manager.init_app(app)
 
 def get_db_connection(database_name):
-    conn = psycopg2.connect(database=database_name, user="postgres", password="toor", host="localhost")
+    conn = psycopg2.connect(database=database_name, user="postgres", password="admin", host="localhost")
     return conn
 
 # A simple user model (you may need to replace this with your database model)
@@ -31,7 +36,7 @@ class User(UserMixin):
         return self.id
 
 # Dummy user (you should implement user lookup in your database)
-users = [User(id=1, name='test', email='test@example.com', password='test123'), User(id=12345, name = 'shalin',email='t', password='test123'), ]
+users = [User(id=1, name='Genevieve', email='test@example.com', password='test123'), User(id=12345, name = 'shalin',email='t', password='test123'), User(id=123465, name = 'Admin',email='admin@usc.edu', password='admin123')]
 
 # User loader
 @login_manager.user_loader
@@ -49,7 +54,7 @@ def login():
     user = next((u for u in users if u.email == email and u.password == password), None)
     if user:
         login_user(user)
-        return jsonify({'success': True, 'message': 'Logged in successfully!'}), 200
+        return jsonify({'success': True, 'message': 'Logged in successfully!', 'name': user.name}), 200
     else:
         return jsonify({'success': False, 'message': 'Invalid credentials!'}), 401
 
@@ -103,7 +108,7 @@ def search_listing():
 
     # Transform the result into a list of dictionaries
     res = []
-    columns = ['id', 'name', 'host_location', 'property_type', 'accommodates', 'bathrooms_text', 'beds', 'amenities', 'price', 'review_scores_rating']
+    columns = ['id', 'name', 'neighbourhood_cleansed', 'property_type', 'accommodates', 'bathrooms_text', 'beds', 'amenities', 'price', 'review_scores_rating']
     for row in rows:
         row_dict = {columns[i]: row[i] for i in range(len(columns))}
         row_dict['city'] = data['city']  # Add the city to each row's dictionary
@@ -306,7 +311,7 @@ def setup_schema(conn, city):
             CREATE TABLE IF NOT EXISTS {city_schema}.listings (
                 id TEXT PRIMARY KEY,
                 name TEXT,
-                host_location VARCHAR(255),
+                neighbourhood_cleansed VARCHAR(255),
                 property_type VARCHAR(255), 
                 accommodates INT, 
                 bathrooms_text VARCHAR(255), 
@@ -345,7 +350,7 @@ def insert_property_data(data, conn, city):
         # Insert into listings
         
         cur.execute(f"""
-            INSERT INTO {city_schema}.listings (id, name, host_location, property_type, accommodates, bathrooms_text, beds, amenities, price, review_scores_rating)
+            INSERT INTO {city}.listings (id, name, host_location, property_type, accommodates, bathrooms_text, beds, amenities, price, review_scores_rating)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             listing_id,
@@ -367,7 +372,7 @@ def insert_property_data(data, conn, city):
         """, (
             id,
             review_id,
-            "default_reviewer",  # Placeholder if not provided
+            str(data['reviewer_name']),  # Placeholder if not provided
             data['review']
         ))
 
@@ -375,9 +380,45 @@ def insert_property_data(data, conn, city):
         cur.execute(f"""
             INSERT INTO {city_schema}.listings_reviews (listing_id, review_id)
             VALUES (%s, %s)
-        """, (listing_id, review_id))
+        """, (listing_id, id))
 
         conn.commit()
+
+def insert_data(cursor, listing_id, city, comment):
+    review_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    try:
+        cursor.execute("INSERT INTO reviews VALUES (%s, 0000, 'admin', %s)", (review_id, comment))
+        cursor.execute("INSERT INTO listings_reviews VALUES (%s, %s)", (listing_id,review_id))
+    except psycopg2.Error as e:
+        print(f"Error inserting data: {e}")
+
+@app.route('/upload_csv', methods=['POST'])
+def upload_csv():
+    file = request.files['file']
+    if not file:
+        return jsonify({'error': 'No file provided'}), 400
+
+    data_stream = io.StringIO(file.read().decode('utf-8-sig'))
+    csv_reader = csv.DictReader(data_stream)
+
+    grouped_data = {}
+    for row in csv_reader:
+        city = row['City'].strip()
+        if city not in grouped_data:
+            grouped_data[city] = []
+        grouped_data[city].append(row)
+    print(grouped_data)
+
+    for city, records in grouped_data.items():
+        conn = get_db_connection(city.lower().replace(' ', '_').replace('-', '_'))
+        if conn:
+            with conn.cursor() as cursor:
+                for record in records:
+                    insert_data(cursor, record['Listing_id'], city, record['Comment'])
+                conn.commit()
+            conn.close()
+
+    return jsonify({'message': 'File uploaded and processed successfully!'}), 200
 
 
 if __name__ == '__main__':
