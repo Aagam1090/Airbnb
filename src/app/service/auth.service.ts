@@ -52,7 +52,8 @@ export class AuthService {
       { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
     ).pipe(
       tap(res => {
-        const response = res as { success: boolean, message: string };
+        const response = res as { success: boolean, message: string, name: string};
+        localStorage.setItem('name', response.name);
         if (!response.success) {
           throw new Error(response.message || 'Unknown error during registration');
         }
