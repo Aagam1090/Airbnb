@@ -11,7 +11,7 @@ import { GetcityService } from '../service/getcity.service';
 export class SearchComponent {
   registrationForm: FormGroup;
   cityList: string[] = [];
-  amenitiesList: string[] = ['Pool', 'Gym', 'Parking', 'WiFi'];
+  amenitiesList: string[] = ['Pool', 'Gym', 'Parking', 'WiFi','Kitchen','Washer'];
   apiUrl = 'http://127.0.0.1:5000/search';
   displayForm = true;
   displayResults = false;

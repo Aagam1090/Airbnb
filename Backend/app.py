@@ -80,27 +80,33 @@ def search_listing():
 
     data = {key: query_params.getlist(key) if len(query_params.getlist(key)) > 1 else query_params[key] for key in query_params}
 
+    print(data)
     city = data.get('city').lower().replace(' ', '_').replace('-', '_')
 
     amenities_list = ['Kitchen', 'Iron', 'Wifi', 'Parking','Gym','Pool','Washer','Dryer','Heating','Air conditioning','TV','Cable TV','Elevator','Family/kid friendly','Smoke detector','Carbon monoxide detector','First aid kit','Fire extinguisher','Essentials','Shampoo','Hangers','Hair dryer','Laptop friendly workspace','Private entrance','Hot water']
 
     sql = f"SELECT * FROM {city}.listings WHERE price >= {data['priceMin']} AND price <= {data['priceMax']} and name like '%{data['name']}%'"
 
-    if data['bedrooms'] != '':
+    if data['bedrooms'] != '' and data['bedrooms'] != 'null':
         sql += f" AND beds = {data['bedrooms']}"
 
-    if data['people'] != '':
+    if data['people'] != '' and data['people'] != 'null':
         sql += f" AND accommodates = {data['people']}"
 
-    if data['rating'] != '':
+    if data['rating'] != '' and data['rating'] != 'null':
         sql += f" AND review_scores_rating >= {data['rating']}"
 
-    if 'amenities' in data:
-        # Iterate over each element in the amenities list
-        for element in data['amenities']:
-            # Add the LIKE condition for the current element to the SQL query
-            sql += f" AND amenities LIKE '%{element}%' "
+    if 'amenities' in data and data['amenities'] != '' and data['amenities'] != 'null':
+        if(isinstance(data['amenities'], str)):
+            print(data['amenities'])
+            sql+= f" AND amenities LIKE '%{data['amenities']}%' "
+        else:
+            # Iterate over each element in the amenities list
+            for element in data['amenities']:
+                # Add the LIKE condition for the current element to the SQL query
+                sql += f" AND amenities LIKE '%{element}%' "
 
+    print(sql)
     db_name = city[0]
     conn = get_db_connection(db_name)
     cursor = conn.cursor() 
