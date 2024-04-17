@@ -157,11 +157,13 @@ def insert_property():
     try:
         # Ensure the city exists in city_info and get db_name
         if city.lower() == "other":
-            city = data['otherCity']
-            db_name = create_city_database(conn, city)
+            temp_city = data['otherCity']
+            db_name = create_city_database(conn, temp_city)
             conn.close()  
+            city = temp_city.lower().replace(' ', '_').replace('-', '_')
 
         db_name = city[0]
+
         conn = get_db_connection(db_name)
         print("in here")
         insert_property_data(data, conn, city)
@@ -257,14 +259,13 @@ def add_review():
 
 def create_city_database(conn, city):
     with conn.cursor() as cur:
-        db_name = city[0]
+        db_name = city.lower().replace(' ', '_').replace('-', '_')[0]
         cur.execute("INSERT INTO city_info (city_name, db_name) VALUES (%s, %s)", (city, db_name))
         conn.commit()
         create_new_city_database(db_name, city)
         return db_name
 
 def create_new_city_database(db_name, city):
-
     conn1 = psycopg2.connect(database="postgres", user="postgres", password="toor", host="localhost")
     conn1.autocommit = True
     cursor = conn1.cursor()
@@ -288,19 +289,21 @@ def create_new_city_database(db_name, city):
     conn.close()
 
 def create_schema_if_not_exists(schema_name, connection):
+    city_schema = schema_name.lower().replace(' ', '_').replace('-', '_')
     try:
         with connection.cursor() as cursor:
-            cursor.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
+            cursor.execute(f"CREATE SCHEMA IF NOT EXISTS {city_schema}")
             connection.commit()
-            print(f"Schema {schema_name} created or already exists.")
+            print(f"Schema {city_schema} created or already exists.")
     except psycopg2.Error as e:
-        print(f"Failed to create or check schema {schema_name}: {e.pgerror}")
+        print(f"Failed to create or check schema {city_schema}: {e.pgerror}")
         connection.rollback()
 
 def setup_schema(conn, city):
+    city_schema = city.lower().replace(' ', '_').replace('-', '_')
     with conn.cursor() as cur:
         cur.execute(f"""
-            CREATE TABLE IF NOT EXISTS {city}.listings (
+            CREATE TABLE IF NOT EXISTS {city_schema}.listings (
                 id TEXT PRIMARY KEY,
                 name TEXT,
                 host_location VARCHAR(255),
@@ -312,13 +315,13 @@ def setup_schema(conn, city):
                 price FLOAT, 
                 review_scores_rating FLOAT
             );
-            CREATE TABLE IF NOT EXISTS {city}.reviews (
+            CREATE TABLE IF NOT EXISTS {city_schema}.reviews (
                 id TEXT PRIMARY KEY,
                 reviewer_id TEXT,
                 reviewer_name TEXT,
                 comments TEXT
             );
-            CREATE TABLE IF NOT EXISTS {city}.listings_reviews (
+            CREATE TABLE IF NOT EXISTS {city_schema}.listings_reviews (
                 listing_id TEXT,
                 review_id TEXT,
                 PRIMARY KEY (listing_id, review_id)
@@ -331,6 +334,7 @@ def my_random(d):
     return random.randint(int('1'+'0'*(d-1)), int('9'*d))
 
 def insert_property_data(data, conn, city):
+    city_schema = city.lower().replace(' ', '_').replace('-', '_')
     # Generate unique IDs for listing and review
     listing_id = str(my_random(5))
     id = str(my_random(5))
@@ -341,7 +345,7 @@ def insert_property_data(data, conn, city):
         # Insert into listings
         
         cur.execute(f"""
-            INSERT INTO {city}.listings (id, name, host_location, property_type, accommodates, bathrooms_text, beds, amenities, price, review_scores_rating)
+            INSERT INTO {city_schema}.listings (id, name, host_location, property_type, accommodates, bathrooms_text, beds, amenities, price, review_scores_rating)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             listing_id,
@@ -358,7 +362,7 @@ def insert_property_data(data, conn, city):
         # print("Listings data inserted successfully.")
         # Insert into reviews
         cur.execute(f"""
-            INSERT INTO {city}.reviews (id, reviewer_id, reviewer_name, comments)
+            INSERT INTO {city_schema}.reviews (id, reviewer_id, reviewer_name, comments)
             VALUES (%s, %s, %s, %s)
         """, (
             id,
@@ -369,7 +373,7 @@ def insert_property_data(data, conn, city):
 
         # Insert into listings_reviews linking table
         cur.execute(f"""
-            INSERT INTO {city}.listings_reviews (listing_id, review_id)
+            INSERT INTO {city_schema}.listings_reviews (listing_id, review_id)
             VALUES (%s, %s)
         """, (listing_id, review_id))
 
