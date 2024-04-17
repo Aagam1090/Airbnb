@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/service/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -8,16 +9,15 @@ import { AuthService } from 'src/app/service/auth.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-
   email: string = "";
   password: string = "";
+  errorMessage: string = "";
 
   constructor(private router: Router, private authService: AuthService) { }
 
   onSubmit() {
     // Store email in local storage
     // localStorage.setItem('email', this.email);
-
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
         console.log('Login successful', response);
@@ -27,10 +27,15 @@ export class LoginComponent {
 
         if (this.authService.getLoginStatus()) {
           this.router.navigate(['/search']);
+        } else {
+          // Normally, 200 status code will not be in 'next' if there's an error
+          this.errorMessage = 'Incorrect email or password';
+          this.authService.setLoginStatus(false);
         }
       },
       error: (error) => {
         console.error('Login failed', error);
+        this.errorMessage = 'Incorrect email or password'; // Set the error message
       }
     });
   }

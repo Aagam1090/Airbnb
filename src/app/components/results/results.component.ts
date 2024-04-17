@@ -15,6 +15,7 @@ export class ResultsComponent implements OnInit, OnChanges, AfterViewInit {
   showLisiting = true;
   reviewData: any[] = [];
   city: string = '';
+  listingId: string = '';
 
   constructor(private reviewService: ReviewService) {}
 
@@ -24,12 +25,41 @@ export class ResultsComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngOnInit() {
-    this.dataSource.data = this.dataresponse || [];
+    this.dataSource.data = this.dataresponse?.map(item => ({
+      ...item,
+      amenities: this.formatAmenities(item.amenities),
+      showMore: false
+    })) || [];
+  }
+  
+  formatAmenities(amenities: string | string[]): string {
+    if (typeof amenities === 'string') {
+      // Assuming the string is in the format of ["item1", "item2", ...]
+      try {
+        // This tries to parse the string as JSON, then joins the array into a string
+        return JSON.parse(amenities).join(', ');
+      } catch (error) {
+        console.error('Error parsing amenities:', error);
+        return amenities; // Fallback to original string if parsing fails
+      }
+    } else if (Array.isArray(amenities)) {
+      // If amenities is already an array, join it into a string
+      return amenities.join(', ');
+    }
+    return ''; // Fallback for any other cases
+  }
+  
+  toggleShowMore(element: any): void {
+    element.showMore = !element.showMore;
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['dataresponse']) {
-      this.dataSource.data = this.dataresponse;
+      this.dataSource.data = this.dataresponse?.map(d => ({
+        ...d,
+        amenities: this.formatAmenities(d.amenities),
+        showMore: false
+      }));
       this.dataSource.paginator = this.paginator;
     }
   }
@@ -47,6 +77,7 @@ export class ResultsComponent implements OnInit, OnChanges, AfterViewInit {
         data => {
           console.log('Reviews:', data);
           this.reviewData = data;
+          this.listingId = row.id;
           this.city = row.city;
           this.showReviews = true;
           this.showLisiting = false;

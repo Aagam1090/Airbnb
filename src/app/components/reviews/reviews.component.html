@@ -3,8 +3,9 @@
   </h2>
 
   <button class="btn btn-primary backSearch" (click)="goBackListing()">Back to Listings</button>
+  <button class="btn btn-primary backSearch" (click)="addReview()">Add Review</button>
 
-  <div class="mat-elevation-z8 tablediv">
+  <div *ngIf="dataSource.data.length > 0; else noReviewsFound" class="mat-elevation-z8 tablediv">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
   
       <ng-container matColumnDef="id">
@@ -43,4 +44,15 @@
     </table>
     <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
   </div>
+
+  <ng-template #noReviewsFound>
+    <mat-card class="mat-elevation-z4" color="warn">
+      <mat-card-content>
+        <h3>
+          No reviews found!
+        </h3>
+      </mat-card-content>
+    </mat-card>
+  </ng-template>
+  
   

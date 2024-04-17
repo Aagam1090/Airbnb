@@ -5,15 +5,18 @@ import { HomeComponent } from './components/home/home.component';
 import { RegisterComponent } from './components/register/register.component';
 import { SearchComponent } from './search/search.component';
 import { InsertComponent } from './insert/insert.component';
+import { AuthGuard } from './auth.guard';
+import { BulkInsertComponent } from './components/bulk-insert/bulk-insert.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
   { path: 'register', component: RegisterComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: 'search', component: SearchComponent },
-  { path: 'insert', component: InsertComponent },
-  { path: 'logout', component: HomeComponent }
+  { path: 'search', component: SearchComponent ,canActivate: [AuthGuard] },
+  { path: 'insert', component: InsertComponent, canActivate: [AuthGuard]  },
+  { path: 'logout', component: HomeComponent },
+  { path: 'bulk-insert', component: BulkInsertComponent}
 ];
 
 @NgModule({

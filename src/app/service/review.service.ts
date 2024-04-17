@@ -26,4 +26,13 @@ export class ReviewService {
     console.log('Updating review:', id, reviewData);
     return this.http.put(`${this.apiUrl}/updateReview/${id}`, reviewData);
   }
+
+  addReview(listingId: string, comments: string, reviewer_name: string, city: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/addReview`, { 
+      listing_id: listingId, 
+      comments: comments, 
+      reviewer_name: reviewer_name,
+      city: city
+    });
+  }  
 }

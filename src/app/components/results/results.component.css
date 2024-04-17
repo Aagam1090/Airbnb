@@ -1,6 +1,6 @@
 table {
     width: 100%;
-    padding: 1%
+    padding: 1%;
   }
   
 .maintab{
@@ -20,3 +20,38 @@ table {
     background-color: #FF5A5F;
     border-color: white;
   }
+
+
+  .mat-cell {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  
+  .mat-column-name {
+    width: 200px; /* Example width */
+  }
+  
+  .mat-column-beds {
+    width: 100px;
+  }
+  
+  .mat-column-price {
+    width: 150px;
+  }
+  
+  .mat-column-amenities {
+    width: 250px; /* Initial width for cropping */
+  }
+  
+  .mat-column-totalRating {
+    width: 120px;
+  }
+  
+  .cropped {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    max-width: 230px; /* slightly less than column width to fit 'show more' */
+  }
+  
