@@ -108,7 +108,7 @@ def search_listing():
 
     # Transform the result into a list of dictionaries
     res = []
-    columns = ['id', 'name', 'host_location', 'property_type', 'accommodates', 'bathrooms_text', 'beds', 'amenities', 'price', 'review_scores_rating']
+    columns = ['id', 'name', 'neighbourhood_cleansed', 'property_type', 'accommodates', 'bathrooms_text', 'beds', 'amenities', 'price', 'review_scores_rating']
     for row in rows:
         row_dict = {columns[i]: row[i] for i in range(len(columns))}
         row_dict['city'] = data['city']  # Add the city to each row's dictionary
@@ -308,7 +308,7 @@ def setup_schema(conn, city):
             CREATE TABLE IF NOT EXISTS {city}.listings (
                 id TEXT PRIMARY KEY,
                 name TEXT,
-                host_location VARCHAR(255),
+                neighbourhood_cleansed VARCHAR(255),
                 property_type VARCHAR(255), 
                 accommodates INT, 
                 bathrooms_text VARCHAR(255), 
@@ -346,7 +346,7 @@ def insert_property_data(data, conn, city):
         # Insert into listings
         
         cur.execute(f"""
-            INSERT INTO {city}.listings (id, name, host_location, property_type, accommodates, bathrooms_text, beds, amenities, price, review_scores_rating)
+            INSERT INTO {city}.listings (id, name, neighbourhood_cleansed, property_type, accommodates, bathrooms_text, beds, amenities, price, review_scores_rating)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             listing_id,
