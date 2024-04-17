@@ -3,6 +3,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { GetcityService } from '../service/getcity.service';
 import { InsertpropertyService } from '../service/insertproperty.service';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { SuccessDialogComponent } from '../components/success-dialog/success-dialog.component';
+import { AuthService } from 'src/app/service/auth.service';
+
 @Component({
   selector: 'app-insert',
   templateUrl: './insert.component.html',
@@ -14,7 +19,7 @@ export class InsertComponent {
   // cityList: string[] = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Other'];
   showOtherCityField = false;
 
-  constructor(private formBuilder: FormBuilder, private http: HttpClient, private getCityService: GetcityService, private insertPropertyService: InsertpropertyService) {}
+  constructor(private formBuilder: FormBuilder, private http: HttpClient, private getCityService: GetcityService, private insertPropertyService: InsertpropertyService, private router: Router, public dialog: MatDialog, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.propertyForm = this.formBuilder.group({
@@ -29,7 +34,8 @@ export class InsertComponent {
       amenities: [''],
       propertyType: ['', Validators.required],
       rating: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
-      review: ['']
+      review: [''],
+      reviewer_name:['']
     });
 
     this.propertyForm.get('city')?.valueChanges.subscribe(value => {
@@ -51,6 +57,7 @@ export class InsertComponent {
   onSubmitPropertyForm() {
     if (this.propertyForm.valid) {
       const formData = this.propertyForm.value;
+      formData['reviewer_name'] = localStorage.getItem('name');
       console.log(formData);
       if (!this.propertyForm.get('otherCity')?.enabled) {
         delete formData.otherCity;  // Ensure otherCity is not sent unnecessarily
@@ -58,6 +65,7 @@ export class InsertComponent {
       this.insertPropertyService.insertProperty(formData).subscribe({
         next: (response) => {
           console.log('Property added successfully:', response);
+          this.openSuccessDialog();
         },
         error: (error) => {
           console.error('Failed to add property:', error);
@@ -66,5 +74,17 @@ export class InsertComponent {
     } else {
       console.error('Form is not valid:', this.propertyForm.errors);
     }
+  }
+  openSuccessDialog() {
+    const dialogRef = this.dialog.open(SuccessDialogComponent, {
+      width: '250px'
+    });
+
+    dialogRef.afterClosed().subscribe((result: string) => {
+      if (result === 'done') {
+        this.authService.getLoginStatus()
+        this.router.navigate(['/search']);  // Redirect to the search page
+      }
+    });
   }
 }

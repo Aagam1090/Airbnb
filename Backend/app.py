@@ -21,7 +21,7 @@ login_manager = LoginManager(app)
 login_manager.init_app(app)
 
 def get_db_connection(database_name):
-    conn = psycopg2.connect(database=database_name, user="postgres", password="toor", host="localhost")
+    conn = psycopg2.connect(database=database_name, user="postgres", password="admin", host="localhost")
     return conn
 
 # A simple user model (you may need to replace this with your database model)
@@ -36,7 +36,7 @@ class User(UserMixin):
         return self.id
 
 # Dummy user (you should implement user lookup in your database)
-users = [User(id=1, name='test', email='test@example.com', password='test123'), User(id=12345, name = 'shalin',email='t', password='test123'), ]
+users = [User(id=1, name='Genevieve', email='test@example.com', password='test123'), User(id=12345, name = 'shalin',email='t', password='test123'), User(id=123465, name = 'Admin',email='admin@usc.edu', password='admin123')]
 
 # User loader
 @login_manager.user_loader
@@ -54,7 +54,7 @@ def login():
     user = next((u for u in users if u.email == email and u.password == password), None)
     if user:
         login_user(user)
-        return jsonify({'success': True, 'message': 'Logged in successfully!'}), 200
+        return jsonify({'success': True, 'message': 'Logged in successfully!', 'name': user.name}), 200
     else:
         return jsonify({'success': False, 'message': 'Invalid credentials!'}), 401
 
@@ -270,7 +270,7 @@ def create_city_database(conn, city):
 
 def create_new_city_database(db_name, city):
 
-    conn1 = psycopg2.connect(database="postgres", user="postgres", password="toor", host="localhost")
+    conn1 = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
     conn1.autocommit = True
     cursor = conn1.cursor()
     try:
@@ -368,7 +368,7 @@ def insert_property_data(data, conn, city):
         """, (
             id,
             review_id,
-            "default_reviewer",  # Placeholder if not provided
+            str(data['reviewer_name']),  # Placeholder if not provided
             data['review']
         ))
 
@@ -376,7 +376,7 @@ def insert_property_data(data, conn, city):
         cur.execute(f"""
             INSERT INTO {city}.listings_reviews (listing_id, review_id)
             VALUES (%s, %s)
-        """, (listing_id, review_id))
+        """, (listing_id, id))
 
         conn.commit()
 

@@ -30,7 +30,8 @@ import { UpdateReviewModalComponent } from './components/update-review-modal/upd
 import { MatDialogModule } from '@angular/material/dialog';
 import { AddReviewModalComponent } from './components/add-review-modal/add-review-modal.component';
 import { MatIconModule } from '@angular/material/icon';import { BulkInsertComponent } from './components/bulk-insert/bulk-insert.component';
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';import { SuccessDialogComponent } from './components/success-dialog/success-dialog.component';
+
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
     ReviewsComponent,
     UpdateReviewModalComponent,
     AddReviewModalComponent,
-    BulkInsertComponent
+    BulkInsertComponent,
+    SuccessDialogComponent
   ],
   imports: [
     BrowserModule,
