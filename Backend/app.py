@@ -4,6 +4,11 @@ from flask_cors import CORS
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from psycopg2 import sql
 import psycopg2
+import csv
+import io
+import random
+import string
+from tempfile import SpooledTemporaryFile
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with your secret key
@@ -328,6 +333,42 @@ def insert_property_data(data, conn):
         """, (listing_id, review_id))
 
         conn.commit()
+
+def insert_data(cursor, listing_id, city, comment):
+    review_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    try:
+        cursor.execute("INSERT INTO reviews VALUES (%s, 0000, 'admin', %s)", (review_id, comment))
+        cursor.execute("INSERT INTO listings_reviews VALUES (%s, %s)", (listing_id,review_id))
+    except psycopg2.Error as e:
+        print(f"Error inserting data: {e}")
+
+@app.route('/upload_csv', methods=['POST'])
+def upload_csv():
+    file = request.files['file']
+    if not file:
+        return jsonify({'error': 'No file provided'}), 400
+
+    data_stream = io.StringIO(file.read().decode('utf-8-sig'))
+    csv_reader = csv.DictReader(data_stream)
+
+    grouped_data = {}
+    for row in csv_reader:
+        city = row['City'].strip()
+        if city not in grouped_data:
+            grouped_data[city] = []
+        grouped_data[city].append(row)
+    print(grouped_data)
+
+    for city, records in grouped_data.items():
+        conn = get_db_connection(city.lower().replace(' ', '_').replace('-', '_'))
+        if conn:
+            with conn.cursor() as cursor:
+                for record in records:
+                    insert_data(cursor, record['Listing_id'], city, record['Comment'])
+                conn.commit()
+            conn.close()
+
+    return jsonify({'message': 'File uploaded and processed successfully!'}), 200
 
 
 if __name__ == '__main__':

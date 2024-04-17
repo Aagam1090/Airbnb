@@ -1,0 +1,19 @@
+<app-navbar></app-navbar>
+<div class="container">
+    <h1>Upload Reviews CSV File</h1>
+    <input type="file" (change)="onFileSelected($event)" accept=".csv">
+    <button (click)="onUpload()" [disabled]="!selectedFile">Upload</button>
+  
+    <!-- Optional: Display upload status -->
+    <p *ngIf="uploadStatus">{{ uploadStatus }}</p>
+  
+    <div *ngIf="csvRecords && csvRecords.length > 0">
+        <br>
+      <h4>Top 20 Rows of CSV Data</h4>
+      <ngx-datatable
+        class="material bordered custom-datatable"
+        [rows]="csvRecords"
+        [columns]="columns">
+      </ngx-datatable>
+  </div>
+  

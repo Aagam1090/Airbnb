@@ -28,7 +28,8 @@ import { ReviewsComponent } from './components/reviews/reviews.component';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { UpdateReviewModalComponent } from './components/update-review-modal/update-review-modal.component';
 import { MatDialogModule } from '@angular/material/dialog';
-
+import { BulkInsertComponent } from './components/bulk-insert/bulk-insert.component';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     SearchComponent,
     ResultsComponent,
     ReviewsComponent,
-    UpdateReviewModalComponent
+    UpdateReviewModalComponent,
+    BulkInsertComponent
   ],
   imports: [
     BrowserModule,
@@ -59,7 +61,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatSortModule,
     MatPaginatorModule,
     ReactiveFormsModule,
-    MatDialogModule
+    MatDialogModule,
+    NgxDatatableModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
