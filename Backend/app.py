@@ -37,7 +37,7 @@ class User(UserMixin):
         return self.id
 
 # Dummy user (you should implement user lookup in your database)
-users = [User(id=1, name='Genevieve', email='test@example.com', password='test123'), User(id=12345, name = 'shalin',email='t', password='test123'), User(id=123465, name = 'Admin',email='admin@usc.edu', password='admin123')]
+users = [User(id=1, name='Genevieve', email='test@example.com', password='test123'), User(id=12345, name = 'shalin',email='shalinbh@usc.edu', password='test123'), User(id=123465, name = 'Admin',email='admin@usc.edu', password='admin123')]
 
 # User loader
 @login_manager.user_loader
