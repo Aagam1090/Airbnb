@@ -75,13 +75,19 @@ Contains Angular components and services. This is where most of the application 
 ## Steps to run the project
 1. Clone the repository by running `git clone https://github.com/Aagam1090/Airbnb.git`
 2. Download a part of the [Airbnb dataset](https://drive.google.com/drive/folders/1pPbjFzAveZtaRjReYcXDvaWSmxy2023r?usp=sharing) used by us and save it in the root directory of the cloned repository.
-3. Open the project in the editor of your choice (we used VSCode).
-4. Run the following commands:
+3. Open the project in the editor of your choice (we used VSCode) and start pgAdmin.
+4. Open the createDBs.py file and change the host, user, and password according to your Postgres setup in main. Similarly, open the app.py file and change the same in the get_db_connection() function.
+5. Run the following commands (It will take time):
    - `cd Backend`
    - `pip install -r requirements.txt`
    - `python3 filterData.py`
    - `python3 createDBs.py`
-5. // TODO
+6. Open a new terminal and run the following commands:
+   - `npm i`
+   - `ng serve`
+7. Open a browser and search `http://localhost:4200/`
+
+   Hopefully, everything starts without any errors!
 
 
 
