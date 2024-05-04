@@ -134,7 +134,7 @@ def create_cities_table(dbname, user, password, host):
             folder_path = os.path.join(directory_path, folder_name)
             if os.path.isdir(folder_path):
                 city_name = folder_name  # The folder name is the city name
-                db_name = folder_name.lower().replace(' ', '_').replace('-', '_')
+                db_name = folder_name.lower().replace(' ', '_').replace('-', '_')[0]
                 
                 # Insert data into the database
                 cursor.execute('INSERT INTO city_info (city_name, db_name) VALUES (%s, %s) ON CONFLICT (city_name) DO NOTHING', (city_name, db_name))

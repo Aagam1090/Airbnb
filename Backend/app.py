@@ -22,8 +22,35 @@ login_manager = LoginManager(app)
 login_manager.init_app(app)
 
 def get_db_connection(database_name):
-    conn = psycopg2.connect(database=database_name, user="postgres", password="toor", host="localhost")
+    """ Retrieves a database connection based on the city name and checks for overflows """
+    base_db_name = database_name
+    if(database_name == "cities"):
+        db_name = "cities"
+    elif get_schema_count(base_db_name) >= 4:
+        db_name = check_and_create_overflow_db(base_db_name)
+    else:
+        db_name = base_db_name
+    
+    conn = psycopg2.connect(database=db_name, user="postgres", password="toor", host="localhost")
     return conn
+
+def find_db_connection_from_city(city_name):
+    """ Retrieves a database connection based on the city name by checking the cities database for the corresponding database entry """
+    conn = psycopg2.connect(database="cities", user="postgres", password="toor", host="localhost")
+    cursor = conn.cursor()
+    try:
+        # Assuming there's a table 'city_info' with columns 'city_name' and 'db_name'
+        cursor.execute("SELECT db_name FROM city_info WHERE city_name = %s", (city_name,))
+        result = cursor.fetchone()
+        print(city_name, result)
+        if result:
+            db_name = result[0]
+            return psycopg2.connect(database=db_name, user="postgres", password="toor", host="localhost")
+        else:
+            raise Exception(f"No database entry found for city: {city_name}")
+    finally:
+        cursor.close()
+        conn.close()
 
 # A simple user model (you may need to replace this with your database model)
 class User(UserMixin):
@@ -107,8 +134,7 @@ def search_listing():
                 sql += f" AND amenities LIKE '%{element}%' "
 
     print(sql)
-    db_name = city[0]
-    conn = get_db_connection(db_name)
+    conn = find_db_connection_from_city(data.get('city'))
     cursor = conn.cursor() 
     cursor.execute(sql)
     rows = cursor.fetchall()
@@ -128,8 +154,8 @@ def get_Reviews():
     data = request.args
     listing_id = data.get('listing_id')
     city = data.get('city').lower().replace(' ', '_').replace('-', '_')
-    db_name = city[0]
-    conn = get_db_connection(db_name)
+    # db_name = city[0]
+    conn = find_db_connection_from_city(data.get('city'))
     cursor = conn.cursor()
     cursor.execute(f"""
     SELECT * FROM {city}.reviews
@@ -173,10 +199,11 @@ def insert_property():
             db_name = create_city_database(conn, temp_city)
             conn.close()  
             city = temp_city.lower().replace(' ', '_').replace('-', '_')
+            conn = find_db_connection_from_city(temp_city)
+        else:
+            db_name = city[0]
+            conn = find_db_connection_from_city(data.get('city'))
 
-        db_name = city[0]
-
-        conn = get_db_connection(db_name)
         print("in here")
         insert_property_data(data, conn, city)
 
@@ -196,8 +223,8 @@ def delete_review():
     if not review_id:
         return jsonify({'success': False, 'message': 'Failure'}), 400
 
-    db_name = city[0]
-    conn = get_db_connection(db_name)
+    # db_name = city[0]
+    conn = find_db_connection_from_city(data.get('city'))
 
     try:
         with conn.cursor() as cur:
@@ -220,8 +247,8 @@ def delete_review():
 def update_review(review_id):
     data = request.get_json()
     city = data['city'].lower().replace(' ', '_').replace('-', '_')  # Use city in your database queries if needed
-    db_name = city[0]  # For database selection
-    conn = get_db_connection(db_name)
+    # db_name = city[0]  # For database selection
+    conn = find_db_connection_from_city(data['city'])
     try:
         with conn.cursor() as cur:
             cur.execute(f"""
@@ -240,8 +267,8 @@ def update_review(review_id):
 def add_review():
     data = request.get_json()
     city = data['city'].lower().replace(' ', '_').replace('-', '_')  # Use city in your database queries if needed
-    db_name = city[0]  # For database selection
-    conn = get_db_connection(db_name)
+    # db_name = city[0]  # For database selection
+    conn = find_db_connection_from_city(data['city'])
     
     # Generate unique IDs for the new review and listing_review entries
     new_review_id = str(my_random(5))  # or use your own function
@@ -269,13 +296,62 @@ def add_review():
     finally:
         conn.close()
 
+def get_schema_count(db_name):
+    """ Utility function to get the count of schemas in a specific database """
+    conn = psycopg2.connect(database=db_name, user="postgres", password="toor", host="localhost")
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT COUNT(schema_name) FROM information_schema.schemata
+        WHERE catalog_name = %s AND schema_name NOT IN ('public', 'information_schema', 'pg_catalog', 'pg_toast')
+    """, (db_name,))
+    count = cursor.fetchone()[0]
+    print(f"Schema count for {db_name}: {count}")
+    cursor.close()
+    conn.close()
+    return count
+
+def check_and_create_overflow_db(base_db_name):
+    """ Checks for overflow databases and creates a new one if necessary """
+    overflow_db_name = f"{base_db_name}_overflow"
+    if not database_exists(overflow_db_name):
+        create_database(overflow_db_name)
+    return overflow_db_name
+
+def database_exists(db_name):
+    """ Checks if a database exists """
+    conn = psycopg2.connect(database="postgres", user="postgres", password="toor", host="localhost")
+    conn.autocommit = True
+    cursor = conn.cursor()
+    cursor.execute("SELECT 1 FROM pg_database WHERE datname=%s", (db_name,))
+    exists = cursor.fetchone() is not None
+    cursor.close()
+    conn.close()
+    return exists
+
+def create_database(db_name):
+    """ Creates a new database """
+    conn = psycopg2.connect(database="postgres", user="postgres", password="toor", host="localhost")
+    conn.autocommit = True
+    cursor = conn.cursor()
+    cursor.execute(f"CREATE DATABASE {db_name}")
+    cursor.close()
+    conn.close()
+    print(f"Database {db_name} created successfully.")
+
 def create_city_database(conn, city):
+    base_db_name = city.lower().replace(' ', '_').replace('-', '_')[0]  # Assumes databases are named after the first letter of the city
+    print(f"Creating database for {city} with base name {base_db_name}")
+    
+    if get_schema_count(base_db_name) >= 4:
+        db_name = check_and_create_overflow_db(base_db_name)
+    else:
+        db_name = base_db_name
+    print(f"Creating database for {city} with name {db_name}")
     with conn.cursor() as cur:
-        db_name = city.lower().replace(' ', '_').replace('-', '_')[0]
         cur.execute("INSERT INTO city_info (city_name, db_name) VALUES (%s, %s) ON CONFLICT (city_name) DO NOTHING", (city, db_name))
         conn.commit()
-        create_new_city_database(db_name, city)
-        return db_name
+    create_new_city_database(db_name, city)
+    return db_name
 
 def create_new_city_database(db_name, city):
     conn1 = psycopg2.connect(database="postgres", user="postgres", password="toor", host="localhost")
@@ -295,7 +371,7 @@ def create_new_city_database(db_name, city):
         conn1.close()
 
     # Connect to the new database and set up schema
-    conn = get_db_connection(db_name)
+    conn = find_db_connection_from_city(city)
     create_schema_if_not_exists(city, conn)
     setup_schema(conn, city)
     conn.close()
@@ -423,7 +499,8 @@ def upload_csv():
     print(grouped_data)
 
     for city, records in grouped_data.items():
-        conn = get_db_connection(city[0].lower())
+        print(city)
+        conn = find_db_connection_from_city(city)
         if conn:
             with conn.cursor() as cursor:
                 for record in records:
@@ -437,8 +514,8 @@ def upload_csv():
 def removeReviews():
     listing_id = request.args.get('listing_id')
     city = request.args.get('city').lower().replace(' ', '_').replace('-', '_')
-    db_name = city[0]
-    conn = get_db_connection(db_name)
+    # db_name = city[0]
+    conn = find_db_connection_from_city(request.args.get('city'))
     try:
         with conn.cursor() as cur:
             cur.execute(f"DELETE FROM {city}.reviews WHERE id IN (SELECT review_id FROM {city}.listings_reviews WHERE listing_id = %s OR listing_id = %s)", (f"{listing_id}", f"{listing_id}.0"))
