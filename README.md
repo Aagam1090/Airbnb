@@ -89,5 +89,35 @@ Contains Angular components and services. This is where most of the application 
 
    Hopefully, everything starts without any errors!
 
+## Screenshots
 
+**Landing Page**
+![home](screenshots/home.png)
 
+**Register**
+![register](screenshots/register.png)
+
+**Login**
+![login](screenshots/login.png)
+
+**Insert**
+![insert](screenshots/insert.png)
+
+**Search**
+![search](screenshots/search.png)
+
+**Search Result**
+![searchresult](screenshots/result1.png)
+
+**Reviews**
+![reviews1](screenshots/review.png)
+![reviews2](screenshots/pagination.png)
+
+**Updating Review**
+![updating](screenshots/updating.png)
+
+**After Updating**
+![afterupdating](screenshots/afterupdate.png)
+
+**Admin Bulk Insert**
+![adminbulkinsert](screenshots/bulkinsert.png)
