@@ -110,7 +110,7 @@ Contains Angular components and services. This is where most of the application 
 ![searchresult](screenshots/result1.png)
 
 **Reviews**
-![reviews1](screenshots/review.png)
+![reviews1](screenshots/reviews.png)
 ![reviews2](screenshots/pagination.png)
 
 **Updating Review**
